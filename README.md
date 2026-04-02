@@ -10,7 +10,8 @@ De opdracht is: Maak een server side rendered (SSR) website die gebruik maakt va
 
 Ik ben vandaag vooral bezig geweest met kijken wat ik gemist heb, de opdracht proberen te snappen en ik ben vooral bezig geweest met Node installeren en Astro werkend maken. Ik heb een tijdje vast gezeten maar uiteindelijk is het gelukt.
 
-### Mijn ideeen voor concept:
+### Week Overzicht:
+Op donderdag heb ik gesprek gehad met mijn clubje + Cyd. Ik heb 3 concepten
 1 - Video Game Trivia - Je krijgt vragen uit een API op basis van moeilijkheidsgraad en over spellen die je wel/niet kent. Je antwoorden worden opgeslagen met LocalStorage en je maakt gebruik van pointer events om 
 
 Content API: Open Trivia Database (OpenTDB)
