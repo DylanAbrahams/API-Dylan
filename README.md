@@ -48,8 +48,14 @@ Link: https://developer.mozilla.org/en-US/docs/Web/API
 Lijst met content API's 
 Link: https://github.com/public-apis/public-apis?utm_source=chatgpt.com
 
+## Dag 2 (8 april)
+Vandaag hebben we in de ochtend een college gehad over de indeling van Astro, over layouts, components etc. Hier heb ik wel veel aan gehad. Ik heb nu in mijn eigen website ook een index, een main layout met daarin de content, een header en een footer. Daarnaast zitten er in de index nog kaarten voor alle pokemon. Deze worden ook uit een component gehaald. Verder heb ik nog een global.css voor de globale stylings.
+
+Op mijn index heb ik nu een overzicht van alle pokemon. Het zijn er 493 want dat is generatie 1 t/m 4. Verder kun je op alle kaarten klikken en op een detail pagina komen. Elke pokemon heeft een detail pagina. De pagina heet [name].astro waarin de naam wordt vervangen met de naam van de pokemon. Momenteel laadt ik de API op zowel de index als de detailpagina, dus ik moet daar nog een oplossing voor vinden, want nu heb ik 2x dezelfde code wat ik uiteraard liever niet heb.
 
 
+### Checkout met Sabrina
+Vandaag ben ik gerandomized met Sabrina. Zij heeft een idee over Harry Potter spells en heeft nu een canvas waarop je kunt tekenen. Ik heb laten zien wat ik nu heb. Morgen ben ik van plan om een random pokemon te laten spawnen en deze te kunnen filteren met knoppen.
 
 
 

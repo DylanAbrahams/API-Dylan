@@ -1,0 +1,103 @@
+---
+const { pokemonList } = Astro.props;
+---
+
+<div class="random-container">
+  <div class="controls">
+    <select id="type-filter">
+      <option value="">All types</option>
+      <option value="fire">Fire</option>
+      <option value="water">Water</option>
+      <option value="grass">Grass</option>
+      <option value="electric">Electric</option>
+      <option value="psychic">Psychic</option>
+      <option value="ice">Ice</option>
+      <option value="dark">Dark</option>
+      <option value="fairy">Fairy</option>
+      <option value="normal">Normal</option>
+      <option value="fighting">Fighting</option>
+      <option value="ground">Ground</option>
+      <option value="flying">Flying</option>
+      <option value="poison">Poison</option>
+      <option value="bug">Bug</option>
+      <option value="rock">Rock</option>
+      <option value="ghost">Ghost</option>
+      <option value="dragon">Dragon</option>
+      <option value="steel">Steel</option>
+    </select>
+
+    <button id="random-btn">Randomize Pokémon</button>
+  </div>
+
+  <div id="pokemon-display" style="margin-top:2rem;"></div>
+
+  <div id="pokemon-data" style="display:none;" data-list={JSON.stringify(pokemonList)}></div>
+
+  <script type="module">
+    const display = document.getElementById("pokemon-display");
+    const btn = document.getElementById("random-btn");
+    const filterSelect = document.getElementById("type-filter");
+
+    const dataDiv = document.getElementById("pokemon-data");
+    let pokemonList = JSON.parse(dataDiv.dataset.list);
+
+    // Preload types voor alle Pokémon
+    async function enrichWithTypes(list) {
+      const enriched = await Promise.all(list.map(async p => {
+        try {
+          const res = await fetch(p.url);
+          const details = await res.json();
+          return { ...p, types: details.types.map(t => t.type.name) };
+        } catch {
+          return { ...p, types: [] };
+        }
+      }));
+      return enriched;
+    }
+
+    let enrichedList = [];
+    enrichWithTypes(pokemonList).then(list => enrichedList = list);
+
+    async function showPokemon(p) {
+      try {
+        const res = await fetch(p.url);
+        const details = await res.json();
+        display.innerHTML = `
+          <div class="wild-pokemon">
+            <h2>${details.name}</h2>
+            <img src="${details.sprites.other["official-artwork"].front_default}" alt="${details.name}" class="pokemon-artwork"/>
+          </div>
+        `;
+      } catch(err) {
+        display.innerHTML = "<p>Fout bij ophalen Pokémon</p>";
+        console.error(err);
+      }
+    }
+
+    btn.addEventListener("click", () => {
+      if (!enrichedList.length) return;
+      const type = filterSelect.value;
+      let filteredList = enrichedList;
+
+      if (type) {
+        filteredList = enrichedList.filter(p => p.types.includes(type));
+      }
+
+      if (!filteredList.length) return;
+      const randomIndex = Math.floor(Math.random() * filteredList.length);
+      showPokemon(filteredList[randomIndex]);
+    });
+  </script>
+</div>
+
+<style>
+.random-container { text-align:center; margin:2rem auto; max-width:400px; }
+.controls { display:flex; justify-content:center; gap:0.5rem; margin-bottom:1rem; }
+#random-btn { padding:0.8rem 1.5rem; font-size:1.2rem; border-radius:8px; border:none; cursor:pointer; background-color:#f08030; color:#fff; transition:0.2s; }
+#random-btn:hover { background-color:#d06020; }
+#type-filter { padding:0.5rem; border-radius:6px; border:1px solid #ccc; }
+
+.wild-pokemon { margin-top:1.5rem; text-align:center; }
+.wild-pokemon h2 { text-transform:capitalize; font-size:1.5rem; margin-bottom:1rem; }
+.pokemon-artwork { width:200px; height:auto; }
+</style>

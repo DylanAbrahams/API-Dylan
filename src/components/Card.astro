@@ -1,0 +1,72 @@
+---
+type Props = {
+  name: string;
+  front_default?: string;
+  front_shiny?: string;
+  official_artwork?: string;
+};
+
+const { name, front_default, front_shiny, official_artwork } = Astro.props;
+---
+
+<a href={`/pokemon/${name}`} class="card-link">
+  <div class="card">
+    {official_artwork ? (
+      <img class="artwork" src={official_artwork} alt={`${name} artwork`} />
+    ) : front_default ? (
+      <img src={front_default} alt={name} />
+    ) : null}
+
+    <h2>{name}</h2>
+
+    <div class="sprites">
+      {front_default && <img src={front_default} alt={name} />}
+      {front_shiny && <img src={front_shiny} alt={`${name} shiny`} />}
+    </div>
+  </div>
+</a>
+
+<style>
+  .card-link {
+    text-decoration: none;
+    color: black;
+    display: inline-block;
+  }
+
+  .card {
+    background: white;
+    border-radius: 16px;
+    padding: 1rem;
+    width: 180px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  }
+
+  h2 {
+    font-size: 1rem;
+    text-transform: capitalize;
+    margin: 0.5rem 0;
+  }
+
+  img {
+    width: 80px;
+    height: 80px;
+  }
+
+  .artwork {
+    width: 120px;
+    height: 120px;
+  }
+
+  .sprites {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+</style>

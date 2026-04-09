@@ -1,0 +1,19 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+import Randomizer from "../../components/Randomizer.astro";
+import { POKEMON_URL } from "../shared.js";
+
+// Build-time fetch van Pokémon lijst
+let pokemonList = await fetch(POKEMON_URL)
+  .then(res => res.json())
+  .then(data => data.results)
+  .catch(() => []);
+---
+
+<MainLayout title="Random Pokémon">
+  {pokemonList.length > 0 ? (
+    <Randomizer pokemonList={pokemonList} />
+  ) : (
+    <p style="text-align:center;">Geen Pokémon gevonden.</p>
+  )}
+</MainLayout>

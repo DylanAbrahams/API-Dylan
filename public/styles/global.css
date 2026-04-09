@@ -1,0 +1,25 @@
+*{
+    margin:0;
+    padding:0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f8ff;
+}
+
+main {
+    min-height:80vh;
+}
+
+h1 {
+    margin-bottom: 1.5rem;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1rem;
+}
