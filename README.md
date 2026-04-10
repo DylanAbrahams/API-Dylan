@@ -38,6 +38,43 @@ Formule 1 Kaarten
 ### Checkout met Melvin
 Melvin voelde zich net als ik niet zo lekker en was eerder naar huis gegaan. Ik heb samen met hem de checkout gedaan.
 
+
+
+## Dag 2 (8 april)
+Vandaag hebben we in de ochtend een college gehad over de indeling van Astro, over layouts, components etc. Hier heb ik wel veel aan gehad. Ik heb nu in mijn eigen website ook een index, een main layout met daarin de content, een header en een footer. Daarnaast zitten er in de index nog kaarten voor alle pokemon. Deze worden ook uit een component gehaald. Verder heb ik nog een global.css voor de globale stylings.
+
+Op mijn index heb ik nu een overzicht van alle pokemon. Het zijn er 493 want dat is generatie 1 t/m 4. Verder kun je op alle kaarten klikken en op een detail pagina komen. Elke pokemon heeft een detail pagina. De pagina heet [name].astro waarin de naam wordt vervangen met de naam van de pokemon. Momenteel laadt ik de API op zowel de index als de detailpagina, dus ik moet daar nog een oplossing voor vinden, want nu heb ik 2x dezelfde code wat ik uiteraard liever niet heb.
+
+
+### Checkout met Sabrina
+Vandaag ben ik gerandomized met Sabrina. Zij heeft een idee over Harry Potter spells en heeft nu een canvas waarop je kunt tekenen. Ik heb laten zien wat ik nu heb. Morgen ben ik van plan om een random pokemon te laten spawnen en deze te kunnen filteren met knoppen.
+
+
+
+
+## Dag 3 (9 april)
+### Werkzaamheden
+Detailpagina
+
+Randomizer
+
+Filteren op types
+
+Gemiddelde stats
+
+Pokemon vangen
+
+### Checkout met Maja
+DND Character builder
+
+## Weekoverzicht
+
+Hover state weg als er geen klik is
+Pokemon trading card voor detailpagina
+
+Localstorage voor pokemon lijst
+Focus op de wereld maken
+
 ## Bronnenlijst
 Video over Astro
 Link: https://www.youtube.com/watch?v=dsTXcSeAZq8
@@ -48,14 +85,28 @@ Link: https://developer.mozilla.org/en-US/docs/Web/API
 Lijst met content API's 
 Link: https://github.com/public-apis/public-apis?utm_source=chatgpt.com
 
-## Dag 2 (8 april)
-Vandaag hebben we in de ochtend een college gehad over de indeling van Astro, over layouts, components etc. Hier heb ik wel veel aan gehad. Ik heb nu in mijn eigen website ook een index, een main layout met daarin de content, een header en een footer. Daarnaast zitten er in de index nog kaarten voor alle pokemon. Deze worden ook uit een component gehaald. Verder heb ik nog een global.css voor de globale stylings.
+Tilemap
+Link: https://projectpokemon.org/home/forums/topic/54669-ndsmm-how-to-map-in-pokemon-gen-4/
 
-Op mijn index heb ik nu een overzicht van alle pokemon. Het zijn er 493 want dat is generatie 1 t/m 4. Verder kun je op alle kaarten klikken en op een detail pagina komen. Elke pokemon heeft een detail pagina. De pagina heet [name].astro waarin de naam wordt vervangen met de naam van de pokemon. Momenteel laadt ik de API op zowel de index als de detailpagina, dus ik moet daar nog een oplossing voor vinden, want nu heb ik 2x dezelfde code wat ik uiteraard liever niet heb.
+Tilemap
+Link PNG: https://www.rebornevo.com/uploads/monthly_2023_03/Route1.png.f760ee448af075e4c51d29b7d6307e08.png
+Link Post: https://www.rebornevo.com/forums/topic/16872-mapscreenshotsprite-showcase/
+
+Unused Pokemon maps
+Link: https://tcrf.net/Pok%C3%A9mon_Gold_and_Silver/Unused_Maps
 
 
-### Checkout met Sabrina
-Vandaag ben ik gerandomized met Sabrina. Zij heeft een idee over Harry Potter spells en heeft nu een canvas waarop je kunt tekenen. Ik heb laten zien wat ik nu heb. Morgen ben ik van plan om een random pokemon te laten spawnen en deze te kunnen filteren met knoppen.
+
+
+
+
+
+
+
+
+
+
+
 
 
 

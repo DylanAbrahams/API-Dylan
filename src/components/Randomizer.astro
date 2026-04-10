@@ -4,6 +4,10 @@ const { pokemonList } = Astro.props;
 
 <div class="random-container">
   <div class="controls">
+    <label for="game-slider">Pokémon kracht / spelprogressie:</label>
+    <input type="range" id="game-slider" min="0" max="150" value="50">
+    <span id="slider-value">50</span>
+
     <select id="type-filter">
       <option value="">All types</option>
       <option value="fire">Fire</option>
@@ -29,75 +33,200 @@ const { pokemonList } = Astro.props;
     <button id="random-btn">Randomize Pokémon</button>
   </div>
 
-  <div id="pokemon-display" style="margin-top:2rem;"></div>
-
-  <div id="pokemon-data" style="display:none;" data-list={JSON.stringify(pokemonList)}></div>
-
-  <script type="module">
-    const display = document.getElementById("pokemon-display");
-    const btn = document.getElementById("random-btn");
-    const filterSelect = document.getElementById("type-filter");
-
-    const dataDiv = document.getElementById("pokemon-data");
-    let pokemonList = JSON.parse(dataDiv.dataset.list);
-
-    // Preload types voor alle Pokémon
-    async function enrichWithTypes(list) {
-      const enriched = await Promise.all(list.map(async p => {
-        try {
-          const res = await fetch(p.url);
-          const details = await res.json();
-          return { ...p, types: details.types.map(t => t.type.name) };
-        } catch {
-          return { ...p, types: [] };
-        }
-      }));
-      return enriched;
-    }
-
-    let enrichedList = [];
-    enrichWithTypes(pokemonList).then(list => enrichedList = list);
-
-    async function showPokemon(p) {
-      try {
-        const res = await fetch(p.url);
-        const details = await res.json();
-        display.innerHTML = `
-          <div class="wild-pokemon">
-            <h2>${details.name}</h2>
-            <img src="${details.sprites.other["official-artwork"].front_default}" alt="${details.name}" class="pokemon-artwork"/>
-          </div>
-        `;
-      } catch(err) {
-        display.innerHTML = "<p>Fout bij ophalen Pokémon</p>";
-        console.error(err);
-      }
-    }
-
-    btn.addEventListener("click", () => {
-      if (!enrichedList.length) return;
-      const type = filterSelect.value;
-      let filteredList = enrichedList;
-
-      if (type) {
-        filteredList = enrichedList.filter(p => p.types.includes(type));
-      }
-
-      if (!filteredList.length) return;
-      const randomIndex = Math.floor(Math.random() * filteredList.length);
-      showPokemon(filteredList[randomIndex]);
-    });
-  </script>
+  <div id="pokemon-display"></div>
+  <div id="pokemon-data" data-list={JSON.stringify(pokemonList)}></div>
 </div>
 
-<style>
-.random-container { text-align:center; margin:2rem auto; max-width:400px; }
-.controls { display:flex; justify-content:center; gap:0.5rem; margin-bottom:1rem; }
-#random-btn { padding:0.8rem 1.5rem; font-size:1.2rem; border-radius:8px; border:none; cursor:pointer; background-color:#f08030; color:#fff; transition:0.2s; }
-#random-btn:hover { background-color:#d06020; }
-#type-filter { padding:0.5rem; border-radius:6px; border:1px solid #ccc; }
+<script type="module">
+document.addEventListener("DOMContentLoaded", () => {
+  const display = document.getElementById("pokemon-display");
+  const btn = document.getElementById("random-btn");
+  const filterSelect = document.getElementById("type-filter");
+  const slider = document.getElementById("game-slider");
+  const sliderValue = document.getElementById("slider-value");
+  const dataDiv = document.getElementById("pokemon-data");
 
-.wild-pokemon { margin-top:1.5rem; text-align:center; }
-.wild-pokemon h2 { text-transform:capitalize; font-size:1.5rem; margin-bottom:1rem; }
-.pokemon-artwork { width:200px; height:auto; }
-</style>
+  const maxPokemon = 6;
+  let enrichedList = [];
+
+  slider.oninput = () => sliderValue.textContent = slider.value;
+
+  // 🔹 Helper
+  async function fetchJSON(url, fallback = null) {
+    try {
+      const res = await fetch(url);
+      return await res.json();
+    } catch {
+      return fallback;
+    }
+  }
+
+  // 🔹 Shuffle
+  const shuffle = arr => arr.slice().sort(() => Math.random() - 0.5);
+
+  // 🔹 Enrich Pokémon
+  async function enrich(list) {
+    display.innerHTML = "<p>Loading Pokémon...</p>";
+    btn.disabled = true;
+
+    const result = await Promise.all(list.map(async p => {
+      const d = await fetchJSON(p.url, {});
+      return {
+        ...p,
+        types: d.types?.map(t => t.type.name) || [],
+        stats: d.stats || [],
+        moves: d.moves || [],
+        artwork: d.sprites?.other?.["official-artwork"]?.front_default || '',
+        frontSprite: d.sprites?.front_default || '',
+        id: d.id || 0
+      };
+    }));
+
+    btn.disabled = false;
+    display.innerHTML = "";
+    return result;
+  }
+
+  // 🔹 Move details
+  async function getMove(move) {
+    const d = await fetchJSON(move.move.url);
+    return {
+      name: move.move.name,
+      type: d?.type?.name || 'unknown',
+      damage_class: d?.damage_class?.name || 'unknown'
+    };
+  }
+
+  // 🔹 Catch rate
+  async function getCatchRate(p) {
+    const d = await fetchJSON(`https://pokeapi.co/api/v2/pokemon-species/${p.id}`);
+    return d?.capture_rate || 45;
+  }
+
+  const tryCatch = rate => Math.random() < (rate / 255);
+
+  // 🔹 Render moves
+  function renderMoves(moves) {
+    if (!moves.length) return "";
+    return `
+      <h3>Moves</h3>
+      <ul class="moves-list">
+        ${moves.map(m => `
+          <li>
+            ${m.name}
+            <span class="move-type type-${m.type}">${m.type}</span>
+            <span class="move-category">${m.damage_class}</span>
+          </li>
+        `).join('')}
+      </ul>
+    `;
+  }
+
+  // 🔹 Show Pokémon
+  async function showPokemon(p) {
+    let moves = shuffle(p.moves).slice(0, 4);
+    moves = await Promise.all(moves.map(getMove));
+
+    display.innerHTML = `
+      <div class="wild-pokemon">
+        <h2>${p.name}</h2>
+        <img src="${p.artwork}" alt="${p.name}">
+        ${renderMoves(moves)}
+        <button id="catch-btn">Catch</button>
+        <p id="catch-result"></p>
+      </div>
+    `;
+  }
+
+  // 🔹 Weighted random
+  function weightedRandom(list, target) {
+    const k = 0.08;
+
+    const weights = list.map(p => {
+      const avg = p.stats.reduce((s, x) => s + x.base_stat, 0) / p.stats.length;
+      return Math.exp(-k * Math.abs(avg - target));
+    });
+
+    let rnd = Math.random() * weights.reduce((a, b) => a + b, 0);
+
+    for (let i = 0; i < list.length; i++) {
+      if ((rnd -= weights[i]) < 0) return list[i];
+    }
+
+    return list[0];
+  }
+
+  // 🔹 Init data
+  const baseList = JSON.parse(dataDiv.dataset.list);
+  enrich(baseList).then(list => enrichedList = list);
+
+  // 🔹 Random button
+  btn.addEventListener("click", async () => {
+    if (!enrichedList.length) return;
+
+    const type = filterSelect.value;
+    const target = parseInt(slider.value, 10);
+
+    let list = enrichedList;
+    if (type) list = list.filter(p => p.types.includes(type));
+
+    if (!list.length) {
+      display.innerHTML = "<p>Geen Pokémon gevonden.</p>";
+      return;
+    }
+
+    const chosen = weightedRandom(list, target);
+    await showPokemon(chosen);
+  });
+
+  // 🔹 Wait for footer
+  const waitForList = setInterval(() => {
+    const el = document.querySelector("footer #my-pokemon-list");
+    if (!el) return;
+
+    clearInterval(waitForList);
+
+    document.addEventListener("click", async e => {
+      if (e.target.id !== "catch-btn") return;
+
+      if (el.children.length >= maxPokemon) {
+        const result = document.getElementById("catch-result");
+        result.textContent = `Max ${maxPokemon} Pokémon`;
+        result.style.color = "orange";
+        return;
+      }
+
+      const name = display.querySelector("h2").textContent;
+      const p = enrichedList.find(p => p.name === name);
+      if (!p) return;
+
+      const success = tryCatch(await getCatchRate(p));
+      const result = document.getElementById("catch-result");
+
+      if (!success) {
+        result.textContent = `${p.name} ontsnapt!`;
+        result.style.color = "red";
+        return;
+      }
+
+      result.textContent = `${p.name} gevangen!`;
+      result.style.color = "green";
+
+      const li = document.createElement("li");
+      const img = document.createElement("img");
+      img.src = p.frontSprite;
+
+      const release = document.createElement("button");
+      release.textContent = "Release";
+      release.onclick = () => li.remove();
+
+      li.append(img, p.name + " ", release);
+      el.appendChild(li);
+
+      display.innerHTML = "";
+    });
+
+  }, 100);
+
+});
+</script>

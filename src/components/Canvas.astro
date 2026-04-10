@@ -1,0 +1,151 @@
+---
+const { width = 900, height = 500 } = Astro.props;
+---
+
+<canvas id="main-canvas" width={width} height={height}></canvas>
+
+<style>
+  canvas {
+    display: block;
+    margin: 20px auto;
+    border: 2px solid #333;
+    background: #111;
+  }
+</style>
+
+<script type="module">
+  const canvas = document.getElementById("main-canvas");
+  const ctx = canvas.getContext("2d");
+
+  const img = new Image();
+  img.src = "/src/assets/Route1-Tilemap.png";
+
+  const viewW = canvas.width;
+  const viewH = canvas.height;
+
+  const player = {
+    x: 350,
+    y: 320,
+    size: 20,
+    speed: 3
+  };
+
+  const keys = {};
+
+  window.addEventListener("keydown", (e) => keys[e.key] = true);
+  window.addEventListener("keyup", (e) => keys[e.key] = false);
+
+  // 🧱 MUREN (hier maak jij je map)
+  const walls = [
+    { x: 0, y: 0, w: 20, h: 20 }, // Voorbeeld
+
+    { x: 725, y: 0, w: 20, h: 200 },
+    { x: 820, y: 0, w: 20, h: 200 },
+
+
+    { x: 820, y: 200, w: 1500, h: 20 },
+
+    { x: 300, y: 0, w: 20, h: 2000 },
+  ];
+
+  // 🧠 PERFECTE COLLISION (AABB)
+  function isColliding(x, y) {
+    const half = player.size / 2;
+
+    const pLeft = x - half;
+    const pRight = x + half;
+    const pTop = y - half;
+    const pBottom = y + half;
+
+    return walls.some(w =>
+      pRight > w.x &&
+      pLeft < w.x + w.w &&
+      pBottom > w.y &&
+      pTop < w.y + w.h
+    );
+  }
+
+  function update() {
+    const mapWidth = img.width;
+    const mapHeight = img.height;
+
+    let nextX = player.x;
+    let nextY = player.y;
+
+    if (keys["ArrowRight"] || keys["d"]) nextX += player.speed;
+    if (keys["ArrowLeft"] || keys["a"]) nextX -= player.speed;
+    if (keys["ArrowDown"] || keys["s"]) nextY += player.speed;
+    if (keys["ArrowUp"] || keys["w"]) nextY -= player.speed;
+
+    // 🧱 map bounds
+    const inBounds =
+      nextX >= 0 && nextX <= mapWidth &&
+      nextY >= 0 && nextY <= mapHeight;
+
+    // 🧱 collision check (X en Y apart = smoother movement)
+    if (inBounds && !isColliding(nextX, player.y)) {
+      player.x = nextX;
+    }
+
+    if (inBounds && !isColliding(player.x, nextY)) {
+      player.y = nextY;
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, viewW, viewH);
+
+    const mapWidth = img.width;
+    const mapHeight = img.height;
+
+    // 🎥 camera volgt player
+    let cameraX = player.x - viewW / 2;
+    let cameraY = player.y - viewH / 2;
+
+    // 🧱 camera bounds
+    cameraX = Math.max(0, Math.min(cameraX, mapWidth - viewW));
+    cameraY = Math.max(0, Math.min(cameraY, mapHeight - viewH));
+
+    // 🗺️ map render
+    ctx.drawImage(
+      img,
+      cameraX, cameraY,
+      viewW, viewH,
+      0, 0,
+      viewW, viewH
+    );
+
+    // 🧱 DEBUG walls
+    ctx.fillStyle = "rgba(255,0,0,0.4)";
+    for (const w of walls) {
+      ctx.fillRect(
+        w.x - cameraX,
+        w.y - cameraY,
+        w.w,
+        w.h
+      );
+    }
+
+    // 🧍 player (center based)
+    const screenX = player.x - cameraX;
+    const screenY = player.y - cameraY;
+
+    ctx.fillStyle = "yellow";
+    ctx.fillRect(
+      screenX - player.size / 2,
+      screenY - player.size / 2,
+      player.size,
+      player.size
+    );
+  }
+
+  function loop() {
+    update();
+    draw();
+    requestAnimationFrame(loop);
+  }
+
+  img.onload = () => {
+    loop();
+  };
+</script>
