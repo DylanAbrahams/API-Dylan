@@ -54,15 +54,16 @@ Vandaag ben ik gerandomized met Sabrina. Zij heeft een idee over Harry Potter sp
 
 ## Dag 3 (9 april)
 ### Werkzaamheden
-Detailpagina
+Vandaag ben ik in de ochtend bezig geweest met de detailpagina. Ik heb ervoor gezorgd dat dat deze nu iets meer styling heeft. Ik wil nog wat meer doen maar voor nu is het een goede basis. Daarnaast wilde ik dat ik niet de API op 2 aparte paginas moest inladen. Ik heb met hulp van Jad een shared.ts bestand gemaakt die dan wordt geimporteerd op elke pagina. Nu is mijn code iets meer DRY en als ik het aantal pokemon wil aanpassen hoef ik nu op maar 1 pagina code aan te passen.
 
-Randomizer
+Verder heb ik een nieuwe pagina toegevoegd. Voor nu heet deze de randomizer. Op deze pagina heb je een knop en daarmee komt een willekeurige pokemon. Wat leuk! Daarna heb ik ervoor gezorgd dat je kan filteren op types. Bijvoorbeeld als je filtert op FIRE, kun je alleen maar vuur pokemon tegenkomen zoals Charmander, Ponyta etc. 
 
-Filteren op types
+Daarnaast wilde ik slider hebben waarmee je de "sterkte" van de pokemon kon bepalen. Als de slider laag staat kom je waarschijnlijk een zwakke pokemon tegen en als de slider hoog staat kom je een sterke pokemon tegen. Ik bedoel hiermee niet alleen de ATK stats, maar de gecombineerde stats van ze allemaal. Ik heb wel even moeten sleutelen om dit goed te doen. Er zijn namelijk pokemon, zoals bv. Geodude, met hoge DEF maar slechte andere stats. Als je het gemiddelde van alle stats calculeert zou Geodude juist heel hoog plaatsen ondanks hij een van de lagere hoort te zijn. Ik heb ervoor gezorgd dat als maar 1 stat hoog zit en de rest niet dat deze dan minder telt. Ik heb nu een systeem die wel prima is, niet perfect maar goed genoeg. Zolang ik niet individuele pokemon hoef te filteren is dit al best goed.
 
-Gemiddelde stats
+In de tussentijd heb ik zowel de overzichts, als de detailpagina in de header gezet. Je kan nu van de ene pagina naar de ander. Detail staat er natuurlijk niet in want die is voor elke pokemon uniek.
 
-Pokemon vangen
+Nog 2 dingen die ik aan de randomizerpagina heb toegevoegd. Ten eerste heb ik 4 willekeurige moves die de pokemon kan leren toegevoegd. Deze zullen random bepaald worden. De moves worden uit de API gehaald. Daarnaast heb ik een vang systeem toegevoegd. Elke pokemon heeft een eigen catch rate wanneer ze met een pokeball gevangen worden. Deze wordt toegepast. Als je probeert te vangen dan heb je een bepaalde kans dat je de pokemon krijgt of hij breekt los. Als hij los breekt, komt er een tekst in beeld. Als je hem vangt wordt de pokemon aan een lijst toegevoegd. Ik heb ervoor gezorgd dat de lijst te zien is in de footer. De footer wordt alleen nog niet geupdatet per pagina. Hier wil ik localstorage voor gebruiken. 
+
 
 ### Checkout met Maja
 DND Character builder
@@ -88,7 +89,7 @@ Link: https://github.com/public-apis/public-apis?utm_source=chatgpt.com
 Tilemap
 Link: https://projectpokemon.org/home/forums/topic/54669-ndsmm-how-to-map-in-pokemon-gen-4/
 
-Tilemap
+Tilemap (degene die ik gebruikt heb)
 Link PNG: https://www.rebornevo.com/uploads/monthly_2023_03/Route1.png.f760ee448af075e4c51d29b7d6307e08.png
 Link Post: https://www.rebornevo.com/forums/topic/16872-mapscreenshotsprite-showcase/
 
