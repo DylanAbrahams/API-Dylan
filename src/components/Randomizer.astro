@@ -1,5 +1,6 @@
 ---
 const { pokemonList } = Astro.props;
+
 ---
 
 <div class="random-container">
@@ -38,6 +39,13 @@ const { pokemonList } = Astro.props;
 </div>
 
 <script type="module">
+import {
+  loadPokemon,
+  savePokemon,
+  addPokemon,
+  removePokemon
+} from "/src/game/pokemonStorage.js";
+
 document.addEventListener("DOMContentLoaded", () => {
   const display = document.getElementById("pokemon-display");
   const btn = document.getElementById("random-btn");
@@ -46,12 +54,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const sliderValue = document.getElementById("slider-value");
   const dataDiv = document.getElementById("pokemon-data");
 
-  const maxPokemon = 6;
   let enrichedList = [];
 
+  // -------------------------
   slider.oninput = () => sliderValue.textContent = slider.value;
 
-  // 🔹 Helper
   async function fetchJSON(url, fallback = null) {
     try {
       const res = await fetch(url);
@@ -61,15 +68,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // 🔹 Shuffle
   const shuffle = arr => arr.slice().sort(() => Math.random() - 0.5);
 
-  // 🔹 Enrich Pokémon
+  // -------------------------
   async function enrich(list) {
-    display.innerHTML = "<p>Loading Pokémon...</p>";
-    btn.disabled = true;
-
-    const result = await Promise.all(list.map(async p => {
+    return await Promise.all(list.map(async p => {
       const d = await fetchJSON(p.url, {});
       return {
         ...p,
@@ -81,13 +84,8 @@ document.addEventListener("DOMContentLoaded", () => {
         id: d.id || 0
       };
     }));
-
-    btn.disabled = false;
-    display.innerHTML = "";
-    return result;
   }
 
-  // 🔹 Move details
   async function getMove(move) {
     const d = await fetchJSON(move.move.url);
     return {
@@ -97,7 +95,6 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   }
 
-  // 🔹 Catch rate
   async function getCatchRate(p) {
     const d = await fetchJSON(`https://pokeapi.co/api/v2/pokemon-species/${p.id}`);
     return d?.capture_rate || 45;
@@ -105,9 +102,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const tryCatch = rate => Math.random() < (rate / 255);
 
-  // 🔹 Render moves
+  // -------------------------
   function renderMoves(moves) {
-    if (!moves.length) return "";
     return `
       <h3>Moves</h3>
       <ul class="moves-list">
@@ -122,7 +118,6 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
   }
 
-  // 🔹 Show Pokémon
   async function showPokemon(p) {
     let moves = shuffle(p.moves).slice(0, 4);
     moves = await Promise.all(moves.map(getMove));
@@ -138,7 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
   }
 
-  // 🔹 Weighted random
+  // -------------------------
   function weightedRandom(list, target) {
     const k = 0.08;
 
@@ -156,11 +151,14 @@ document.addEventListener("DOMContentLoaded", () => {
     return list[0];
   }
 
-  // 🔹 Init data
+  // -------------------------
   const baseList = JSON.parse(dataDiv.dataset.list);
+
   enrich(baseList).then(list => enrichedList = list);
 
-  // 🔹 Random button
+  // -------------------------
+  // RANDOM BUTTON
+  // -------------------------
   btn.addEventListener("click", async () => {
     if (!enrichedList.length) return;
 
@@ -168,6 +166,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const target = parseInt(slider.value, 10);
 
     let list = enrichedList;
+
     if (type) list = list.filter(p => p.types.includes(type));
 
     if (!list.length) {
@@ -179,54 +178,38 @@ document.addEventListener("DOMContentLoaded", () => {
     await showPokemon(chosen);
   });
 
-  // 🔹 Wait for footer
-  const waitForList = setInterval(() => {
-    const el = document.querySelector("footer #my-pokemon-list");
-    if (!el) return;
+  // -------------------------
+  // CATCH SYSTEM
+  // -------------------------
+  document.addEventListener("click", async e => {
+    if (e.target.id !== "catch-btn") return;
 
-    clearInterval(waitForList);
+    const name = display.querySelector("h2").textContent;
+    const p = enrichedList.find(p => p.name === name);
+    if (!p) return;
 
-    document.addEventListener("click", async e => {
-      if (e.target.id !== "catch-btn") return;
+    const success = tryCatch(await getCatchRate(p));
+    const result = document.getElementById("catch-result");
 
-      if (el.children.length >= maxPokemon) {
-        const result = document.getElementById("catch-result");
-        result.textContent = `Max ${maxPokemon} Pokémon`;
-        result.style.color = "orange";
-        return;
-      }
+    if (!success) {
+      result.textContent = `${p.name} ontsnapt!`;
+      result.style.color = "red";
+      return;
+    }
 
-      const name = display.querySelector("h2").textContent;
-      const p = enrichedList.find(p => p.name === name);
-      if (!p) return;
+    result.textContent = `${p.name} gevangen!`;
+    result.style.color = "green";
 
-      const success = tryCatch(await getCatchRate(p));
-      const result = document.getElementById("catch-result");
-
-      if (!success) {
-        result.textContent = `${p.name} ontsnapt!`;
-        result.style.color = "red";
-        return;
-      }
-
-      result.textContent = `${p.name} gevangen!`;
-      result.style.color = "green";
-
-      const li = document.createElement("li");
-      const img = document.createElement("img");
-      img.src = p.frontSprite;
-
-      const release = document.createElement("button");
-      release.textContent = "Release";
-      release.onclick = () => li.remove();
-
-      li.append(img, p.name + " ", release);
-      el.appendChild(li);
-
-      display.innerHTML = "";
+    addPokemon({
+      name: p.name,
+      frontSprite: p.frontSprite
     });
 
-  }, 100);
+    // 🔥 trigger update event
+    window.dispatchEvent(new Event("pokemon-updated"));
+
+    display.innerHTML = "";
+  });
 
 });
 </script>

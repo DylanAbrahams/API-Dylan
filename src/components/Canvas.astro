@@ -14,154 +14,173 @@ const { width = 900, height = 500 } = Astro.props;
 </style>
 
 <script type="module">
+  import { walls } from "../game/walls.js";
+  import { grass } from "../game/grass.js";
+
   const canvas = document.getElementById("main-canvas");
   const ctx = canvas.getContext("2d");
 
   const img = new Image();
   img.src = "/src/assets/Route1-Tilemap.png";
 
+  const playerImg = new Image();
+  playerImg.src = "/src/assets/Trainer_Spritesheet.png";
+
   const viewW = canvas.width;
   const viewH = canvas.height;
 
+  const SPRITE_SIZE = 64;
+  const FRAME_COUNT = 4;
+
+  let lastTime = 0;
+
+  // ✅ LOAD SAVE
+  const saved = JSON.parse(localStorage.getItem("playerState"));
+
   const player = {
-    x: 1600,
-    y: 350,
-    size: 20,
-    speed: 3
+    x: saved?.x ?? 970,
+    y: saved?.y ?? 1060,
+    size: 36,
+    speed: 240,
+    frame: 0,
+    direction: saved?.direction ?? 0,
+    moving: false
   };
 
   const keys = {};
-
   window.addEventListener("keydown", (e) => keys[e.key] = true);
   window.addEventListener("keyup", (e) => keys[e.key] = false);
 
-  // 🧱 MUREN (hier maak jij je map)
-  const walls = [
-    // Voorbeeld
-    { x: 0, y: 0, w: 20, h: 20 },
+  function savePlayer() {
+    localStorage.setItem("playerState", JSON.stringify({
+      x: player.x,
+      y: player.y,
+      direction: player.direction
+    }));
+  }
 
-    // Volledige buitenkant
-        // Links
-        { x: 300, y: 250, w: 20, h: 600 },
-        // Rechts
-        { x: 1915, y: 200, w: 20, h: 650 },
-        // Boven
-        { x: 300, y: 250, w: 400, h: 20 },
-        { x: 820, y: 200, w: 1100, h: 20 },
-        // Onder
-        { x: 300, y: 830, w: 570, h: 20 },
-        { x: 1140, y: 830, w: 790, h: 20 },
-  
-    // Beginpunt onderaan
-    { x: 850, y: 830, w: 20, h: 270 },
-    { x: 1140, y: 830, w: 20, h: 270 },
-
-    // Uitgang bovenaan 
-    { x: 700, y: 0, w: 20, h: 270 }, // Links
-    { x: 820, y: 0, w: 20, h: 200 }, // Rechts
-
-    // Bomen
-
-        // Ingang
-        { x: 850, y: 1030, w:90, h: 70 }, // Begin eerste boom links
-        { x: 850, y: 960, w:60, h: 70 }, // Begin tweede boom links
-        { x: 1045, y: 895, w:95, h: 200 }, // Begin bomen rechts
-        { x: 1010, y: 960, w:35, h: 80 }, // Begin halve boom rechts
-
-        // Onderste laag
-        { x: 440, y: 705, w:80, h: 70 }, // 1 boom
-        { x: 405, y: 775, w:150, h: 55 }, // 2 bomen
-        
-        { x: 820, y: 705, w:280, h: 80 }, // 4 bomen
-        { x: 850, y: 785, w:150, h: 70 }, // 2 bomen
-        { x: 850, y: 855, w:120, h: 60 }, // 2 bomen
-
-        { x: 1300, y: 640, w:220, h: 65 }, // 3 bomen
-        { x: 1270, y: 705, w:340, h: 80 }, // 5 bomen
-        { x: 1240, y: 785, w:340, h: 45 }, // 5 bomen
-
-        // Tweede laag van onder
-        { x: 300, y: 445, w:65, h: 210 }, // 3 bomen verticaal
-        { x: 365, y: 510, w:95, h: 90 }, // 2 bomen
-        { x: 440, y: 540, w:275, h: 90 }, // 4 bomen
-        
-        { x: 950, y: 440, w:70, h: 90 }, // 1 boom
-        { x: 1020, y: 415, w:75, h: 150 }, // 2 bomen
-
-        
-        { x: 1430, y: 415, w:70, h: 150 }, // 2 bomen
-        { x: 1500, y: 385, w:75, h: 210 }, // 3 bomen
-
-        { x: 1620, y: 480, w:70, h: 200 }, // 3 bomen
-        { x: 1690, y: 445, w:80, h: 280 }, // 4 bomen
-
-        { x: 1875, y: 380, w:40, h: 80 }, // 1 boom rechterkant
-        { x: 1875, y: 510, w:40, h: 80 }, // 1 boom rechterkant
-        { x: 1875, y: 640, w:40, h: 80 }, // 1 boom rechterkant
-
-        // Bovenste laag
-        { x: 320, y: 315, w:45, h: 80 }, // 1 boom linkerkant
-
-        { x: 570, y: 270, w:75, h: 200 }, // 3 bomen
-        { x: 645, y: 290, w:65, h: 140 }, // 2 bomen
-
-        { x: 920, y: 220, w:335, h: 50 }, // 5 bomen
-        { x: 950, y: 270, w:145, h: 60 }, // 2 bomen
-
-        { x: 1560, y: 220, w:270, h: 50 }, // 4 bomen
-
-        { x: 1875, y: 220, w:40, h: 60 }, // 1 boom
-
-    // 6 Stenen
-    
-
-
-    
-
-    
-  ];
-
-  // COLLISION (AABB)
   function isColliding(x, y) {
     const half = player.size / 2;
 
-    const pLeft = x - half;
-    const pRight = x + half;
-    const pTop = y - half;
-    const pBottom = y + half;
-
     return walls.some(w =>
-      pRight > w.x &&
-      pLeft < w.x + w.w &&
-      pBottom > w.y &&
-      pTop < w.y + w.h
+      x + half > w.x &&
+      x - half < w.x + w.w &&
+      y + half > w.y &&
+      y - half < w.y + w.h
     );
   }
 
-  function update() {
+  function isInGrass(x, y) {
+    const half = player.size / 2;
+
+    return grass.some(g =>
+      x + half > g.x &&
+      x - half < g.x + g.w &&
+      y + half > g.y &&
+      y - half < g.y + g.h
+    );
+  }
+
+  let encounterCooldown = 0;
+
+  function update(deltaTime) {
     const mapWidth = img.width;
     const mapHeight = img.height;
 
     let nextX = player.x;
     let nextY = player.y;
 
-    if (keys["ArrowRight"] || keys["d"]) nextX += player.speed;
-    if (keys["ArrowLeft"] || keys["a"]) nextX -= player.speed;
-    if (keys["ArrowDown"] || keys["s"]) nextY += player.speed;
-    if (keys["ArrowUp"] || keys["w"]) nextY -= player.speed;
+    player.moving = false;
 
-    // 🧱 map bounds
-    const inBounds =
-      nextX >= 0 && nextX <= mapWidth &&
-      nextY >= 0 && nextY <= mapHeight;
+    const moveAmount = player.speed * deltaTime;
 
-    // 🧱 collision check (X en Y apart = smoother movement)
-    if (inBounds && !isColliding(nextX, player.y)) {
-      player.x = nextX;
+    let dx = 0;
+    let dy = 0;
+
+    if (keys["ArrowDown"] || keys["s"]) {
+      dy += 1;
+      player.direction = 0;
     }
 
-    if (inBounds && !isColliding(player.x, nextY)) {
+    if (keys["ArrowUp"] || keys["w"]) {
+      dy -= 1;
+      player.direction = 3;
+    }
+
+    if (keys["ArrowLeft"] || keys["a"]) {
+      dx -= 1;
+      player.direction = 1;
+    }
+
+    if (keys["ArrowRight"] || keys["d"]) {
+      dx += 1;
+      player.direction = 2;
+    }
+
+    player.moving = dx !== 0 || dy !== 0;
+
+    if (player.moving) {
+      const length = Math.hypot(dx, dy);
+      dx /= length;
+      dy /= length;
+
+      nextX += dx * moveAmount;
+      nextY += dy * moveAmount;
+    }
+
+    const half = player.size / 2;
+
+    // X movement
+    const inBoundsX =
+      nextX - half >= 0 &&
+      nextX + half <= mapWidth;
+
+    if (inBoundsX && !isColliding(nextX, player.y)) {
+      player.x = nextX;
+      savePlayer();
+    }
+
+    // Y movement
+    const inBoundsY =
+      nextY - half >= 0 &&
+      nextY + half <= mapHeight;
+
+    if (inBoundsY && !isColliding(player.x, nextY)) {
       player.y = nextY;
+      savePlayer();
+    }
+
+    // 🌿 RANDOM ENCOUNTER SYSTEM
+    if (player.moving && isInGrass(player.x, player.y)) {
+      encounterCooldown += deltaTime;
+
+      if (encounterCooldown > 0.3) {
+        encounterCooldown = 0;
+
+        const chance = Math.random();
+
+        if (chance < 0.08) {
+          window.location.href = "/randomizer";
+        }
+      }
+    } else {
+      encounterCooldown = 0;
+    }
+  }
+
+  let frameTimer = 0;
+  const frameSpeed = 0.1;
+
+  function updateAnimation(deltaTime) {
+    if (player.moving) {
+      frameTimer += deltaTime;
+
+      if (frameTimer >= frameSpeed) {
+        player.frame = (player.frame + 1) % FRAME_COUNT;
+        frameTimer = 0;
+      }
+    } else {
+      player.frame = 0;
     }
   }
 
@@ -171,54 +190,62 @@ const { width = 900, height = 500 } = Astro.props;
     const mapWidth = img.width;
     const mapHeight = img.height;
 
-    // 🎥 camera volgt player
     let cameraX = player.x - viewW / 2;
     let cameraY = player.y - viewH / 2;
 
-    // 🧱 camera bounds
     cameraX = Math.max(0, Math.min(cameraX, mapWidth - viewW));
     cameraY = Math.max(0, Math.min(cameraY, mapHeight - viewH));
 
-    // 🗺️ map render
-    ctx.drawImage(
-      img,
-      cameraX, cameraY,
-      viewW, viewH,
-      0, 0,
-      viewW, viewH
-    );
+    ctx.drawImage(img, cameraX, cameraY, viewW, viewH, 0, 0, viewW, viewH);
 
-    // 🧱 DEBUG walls
-    ctx.fillStyle = "rgba(255,0,0,0.4)";
-    for (const w of walls) {
-      ctx.fillRect(
-        w.x - cameraX,
-        w.y - cameraY,
-        w.w,
-        w.h
-      );
+    // 🌿 GRASS DEBUG RENDER
+    ctx.fillStyle = "rgba(0, 0, 255, 0.3)";
+    for (const g of grass) {
+      ctx.fillRect(g.x - cameraX, g.y - cameraY, g.w, g.h);
     }
 
-    // 🧍 player (center based)
+    // 🔴 WALL DEBUG
+    ctx.fillStyle = "rgba(255,0,0,0.3)";
+    for (const w of walls) {
+      ctx.fillRect(w.x - cameraX, w.y - cameraY, w.w, w.h);
+    }
+
     const screenX = player.x - cameraX;
     const screenY = player.y - cameraY;
 
-    ctx.fillStyle = "yellow";
-    ctx.fillRect(
-      screenX - player.size / 2,
-      screenY - player.size / 2,
-      player.size,
-      player.size
+    ctx.drawImage(
+      playerImg,
+      player.frame * SPRITE_SIZE,
+      player.direction * SPRITE_SIZE,
+      SPRITE_SIZE,
+      SPRITE_SIZE,
+      screenX - SPRITE_SIZE / 2,
+      screenY - SPRITE_SIZE / 2,
+      SPRITE_SIZE,
+      SPRITE_SIZE
     );
   }
 
-  function loop() {
-    update();
+  function loop(currentTime) {
+    const deltaTime = (currentTime - lastTime) / 1000;
+    lastTime = currentTime;
+
+    update(deltaTime);
+    updateAnimation(deltaTime);
     draw();
+
     requestAnimationFrame(loop);
   }
 
-  img.onload = () => {
-    loop();
-  };
+  let loaded = 0;
+  function checkStart() {
+    loaded++;
+    if (loaded === 2) {
+      lastTime = performance.now();
+      requestAnimationFrame(loop);
+    }
+  }
+
+  img.onload = checkStart;
+  playerImg.onload = checkStart;
 </script>

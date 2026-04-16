@@ -10,6 +10,9 @@ De opdracht is: Maak een server side rendered (SSR) website die gebruik maakt va
 
 Ik ben vandaag vooral bezig geweest met kijken wat ik gemist heb, de opdracht proberen te snappen en ik ben vooral bezig geweest met Node installeren en Astro werkend maken. Ik heb een tijdje vast gezeten maar uiteindelijk is het gelukt.
 
+### Checkout met Melvin
+Melvin voelde zich net als ik niet zo lekker en was eerder naar huis gegaan. Ik heb samen met hem de checkout gedaan. Verder heeft hij me geholpen met Astro waar ik nog vast liep. 
+
 ### Week Overzicht:
 Op donderdag heb ik gesprek gehad met mijn clubje + Cyd. Ik heb 3 concepten
 1 - Video Game Trivia - Je krijgt vragen uit een API op basis van moeilijkheidsgraad en over spellen die je wel/niet kent. Je antwoorden worden opgeslagen met LocalStorage en je maakt gebruik van pointer events om 
@@ -33,10 +36,9 @@ Web API #2: ?
 Formule 1 Kaarten
 
 
-## Weekoverzicht 1
+Ik heb uiteindelijk na feedback van Cyd en mijn clubje gekozen voor het pokemon idee met de nadruk op het kunnen lopen in een wereld met een canvas en daarin op verschillende plekken, verschillende pokemon tegenkomen.
 
-### Checkout met Melvin
-Melvin voelde zich net als ik niet zo lekker en was eerder naar huis gegaan. Ik heb samen met hem de checkout gedaan.
+
 
 
 
@@ -66,15 +68,45 @@ Nog 2 dingen die ik aan de randomizerpagina heb toegevoegd. Ten eerste heb ik 4 
 
 
 ### Checkout met Maja
-DND Character builder
+Vandaag werd ik gerandomized met Maja. Zij is bezig met een DND Character builder. Afhankelijk van keuzes die je maakt heeft het karakter verschillende stats, best wel nice. Ik ben zelf van plan om volgende week mijn idee met het canvas uit te werken aangezien het daar wel tijd voor wordt.
 
-## Weekoverzicht
+## Week 2 Overzicht
 
-Hover state weg als er geen klik is
-Pokemon trading card voor detailpagina
+Astro werkend
 
-Localstorage voor pokemon lijst
-Focus op de wereld maken
+Pokemon Overzicht
+
+Pokemon Detail
+
+
+
+
+
+
+Verder had ik vrijdag nog het gesprek met mijn clubje + Cyd, hiervan de aantekeningen:
+- Hover state moet weg als er geen klik is, grote pet peeve van Cyd
+- Pokemon trading card styling voor detailpagina, wel een leuk idee. 
+- Localstorage voor pokemon lijst.
+- Focus op de wereld maken, mijn unieke functie moet ik nu wel echt aan beginnen, dus volgende week gaan we canvas doen.
+
+
+
+
+## Dag 4 (15 april)
+### Werkzaamheden
+Vandaag ben ik thuisgebleven aangezien ik dacht dat er vandaag geen docenten aanwezig zouden zijn. Blijkbaar had Jad vandaag lesgegeven, maar dat had ik zelf niet gezien. In de planning staat deze hele week leeg, dus dat had ik niet echt kunnen weten. Morgen ben ik van plan om wel te komen.
+
+Ik kreeg vorige week als feedback om echt te gaan beginnen met mijn unieke functie, dus dat ben ik gaan doen. Ik heb vandaag (en deels vorige week vrijdag) mijn canvas werkend gekregen. Ik had hier al ervaring mee in Sprint0 en vorige jaren dus dit ging me al best goed af. Ik heb een gebied gemaakt waarin je rond kunt lopen met WASD. Verder als je bij de rand van het scherm komt, dan stopt de camera met bewegen.
+
+Ik heb een tilemap gevonden online. Bron staat in de bronnenlijst. Deze lijkt me wel geschikt aangezien er veel graspaden zijn, oftewel veel verschillende pokemon mogelijkheden. Het liefst had ik wel meer variatie in de wereld, maar ik wil niet te veel tijd besteden aan een hele map zelf maken, dus we zullen het hiermee doen. Misschien ga ik de PNG nog een beetje met kleur aanpassen om meer typings aan te duiden.
+
+Ik heb veel tijd besteed aan collisions. Aangezien de hele map een PNG is, inclusief de bomen en stenen, moet ik alle collision er handmatig inzetten. Ik heb dus overal onzichtbare (of voor nu roodgekleurde) muren neergezet om ervoor te zorgen dat de speler niet door bomen heen kan lopen en buiten bounds heen kan. 
+
+Als laatste heb ik nog een speler sprite toegevoegd. Deze staat ook in de bronnenlijst. Het zijn 16 sprites, 4 voor elke zijde inclusief staan en lopen. 
+
+
+### Checkout met Melvin
+Omdat we allebei vanuit huis zijn wezen werken, hebben we wederom samen checkout gedaan. Ik heb nu een canvas waarin je kunt rondlopen met toegevoegde hitboxes voor collision met muren en hij is bezig met AR waarmee hij pokemon op zijn camera zichtbaar kan maken die met je mee bewegen aan de hand van de positie van je gezicht. Best tof. Morgen ga ik proberen om het gras in de wereld werkend te maken en dan pokemon te laten spawnen. Ik moet mijn scripts gaan combineren. Verder wil ik localstorage gaan gebruiken voor de pokemon die je vangt. Ook moet ik nog even code toevoegen om een vaste framerate in te stellen, zodat het spel niet te snel/langzaam loopt op bepaalde devices. 
 
 ## Bronnenlijst
 Video over Astro
@@ -95,6 +127,11 @@ Link Post: https://www.rebornevo.com/forums/topic/16872-mapscreenshotsprite-show
 
 Unused Pokemon maps
 Link: https://tcrf.net/Pok%C3%A9mon_Gold_and_Silver/Unused_Maps
+
+Trainer spritesheet
+Link: https://www.deviantart.com/scizorbytes/art/Battle-Legend-Red-Gen-4-Overworld-Sprites-917367151
+
+
 
 
 
