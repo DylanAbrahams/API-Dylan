@@ -108,6 +108,14 @@ Als laatste heb ik nog een speler sprite toegevoegd. Deze staat ook in de bronne
 ### Checkout met Melvin
 Omdat we allebei vanuit huis zijn wezen werken, hebben we wederom samen checkout gedaan. Ik heb nu een canvas waarin je kunt rondlopen met toegevoegde hitboxes voor collision met muren en hij is bezig met AR waarmee hij pokemon op zijn camera zichtbaar kan maken die met je mee bewegen aan de hand van de positie van je gezicht. Best tof. Morgen ga ik proberen om het gras in de wereld werkend te maken en dan pokemon te laten spawnen. Ik moet mijn scripts gaan combineren. Verder wil ik localstorage gaan gebruiken voor de pokemon die je vangt. Ook moet ik nog even code toevoegen om een vaste framerate in te stellen, zodat het spel niet te snel/langzaam loopt op bepaalde devices. 
 
+
+## Dag 5 (16 april)
+### Werkzaamheden
+Vandaag ben ik wel naar school gegaan. Het lokaal was bezet maar aan de andere kant van de gang was het vrij, dus kon ik daar werken. Ik heb vandaag de collisions afgemaakt, alle muren staan nu goed. Ik heb een hoop gepriegeld met de coordinaten totdat ik er tevreden mee was. Vervolgens heb ik gras toegevoegd. Hier heb ik ook alle hitboxes voor ingezet met alle coordinaten. Ik heb losse bestanden gemaakt voor alle locaties van de muren/het gras. Als je door het gras loopt, heb je kans dat je wordt doorgestuurd naar de randomizer pagina. Dit werkt door een random waarde te geven wanneer je het gras aanraakt die steeds meer omlaag gaat als je erin loopt. Ik moet even goed gaan nadenken over hoe ik het er precies uit wil laten zien. Moet de randomizer code op de canvas? Blijven het meerdere pagina's. Wat ga ik met de header doen? Dit zijn de keuzes die ik moet maken. Ik zit er aan te denken om de header gewoon een paar fixed buttons maken die in de hoeken te zien zijn, zodat je de hele canvas full screen kan gebruiken.
+
+### Checkout met Melvin
+Wederom heb ik mijn checkout met Melvin gedaan. Hij heeft meer progressie gemaakt aan zijn AR idee en heeft meer styling erin zitten. Ik moet zelf ook aan de bak met mijn styling. Ik wil voor de detailpagina Pokemon trading card styling toepassen. Verder moet ook de overzichts, randomizer en canvas pagina gedaan worden.
+
 ## Bronnenlijst
 Video over Astro
 Link: https://www.youtube.com/watch?v=dsTXcSeAZq8
