@@ -116,6 +116,23 @@ Vandaag ben ik wel naar school gegaan. Het lokaal was bezet maar aan de andere k
 ### Checkout met Melvin
 Wederom heb ik mijn checkout met Melvin gedaan. Hij heeft meer progressie gemaakt aan zijn AR idee en heeft meer styling erin zitten. Ik moet zelf ook aan de bak met mijn styling. Ik wil voor de detailpagina Pokemon trading card styling toepassen. Verder moet ook de overzichts, randomizer en canvas pagina gedaan worden.
 
+## Week 3 Overzicht
+
+Alles over Canvas
+
+## Dag 6 (22 april)
+### Werkzaamheden
+Vandaag hebben we een college gehad over onze site online zetten op onrender. Dit ging wel goed, ik had na wat hulp van Jad hem succesvol online gekregen. Wel waren mijn canvas en mijn randomizer gesloopt. Dit kwam omdat de canvas images niet werden opgehaald aangezien deze niet te bereiken waren door de renderer. Ditzelfde geldt voor het script voor de localstorage. Toen ik eenmaal alles verplaatst had deed alles het weer goed.
+
+Verder ben ik vandaag vooral bezig geweest met styling. Vooral aan de detailpagina heb ik veel gewerkt. Ik had het idee gekregen om de detailpagina te baseren op pokemon kaarten. Ik heb de styling van de pokemon TCG toegpepast op de detailpagina met de informatie die ik uit de API kan halen.
+
+Verder heb ik de overzichtspagina en de header beter gestyled. Ik heb verschillende dingen geprobeerd, veel waren of te saai of hadden te veel felle kleuren. Uiteindelijk heb ik gekozen voor een soort laboratorium gevoel. Dit heb ik toegepast op de header, overzichts- en detailpagina.
+
+Dit ging allemaal wel goed, maar ik moet vaak mijn site opnieuw opstarten zodat de styling wordt toegepast.
+
+### Checkout met Melvin
+vandaag werd ik gerandomized met Aya A. Maar omdat ze niet in het lokaal was heb ik hem wederom gedaan met Melvin. Hij is bezig geweest met styling voor zijn knoppen, heeft hij zijn code schoner gemaakt en ook zijn repo online gezet. Hij gaat morgen aan detailpagina en UI werken. Ik ga morgen mijn randomizer combineren met mijn canvas. Verder wil ik de styling voor allebei die pagina's dan gaan fixen.
+
 ## Bronnenlijst
 Video over Astro
 Link: https://www.youtube.com/watch?v=dsTXcSeAZq8
