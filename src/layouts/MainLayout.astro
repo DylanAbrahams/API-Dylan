@@ -25,7 +25,7 @@ const { title = "Pokémon Lijst" } = Astro.props;
     <Footer />
 
     <script type="module">
-      import { loadPokemon, removePokemon } from "@/game/pokemonStorage.js";
+      import { loadPokemon, removePokemon } from "../game/pokemonStorage.js";
 
       function renderFooter() {
         const el = document.querySelector("#my-pokemon-list");
