@@ -1,6 +1,5 @@
 ---
 const { pokemonList } = Astro.props;
-
 ---
 
 <div class="random-container">
@@ -81,6 +80,7 @@ document.addEventListener("DOMContentLoaded", () => {
         moves: d.moves || [],
         artwork: d.sprites?.other?.["official-artwork"]?.front_default || '',
         frontSprite: d.sprites?.front_default || '',
+        backSprite: d.sprites?.back_default || '', // ✅ added
         id: d.id || 0
       };
     }));
@@ -153,7 +153,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // -------------------------
   const baseList = JSON.parse(dataDiv.dataset.list);
-
   enrich(baseList).then(list => enrichedList = list);
 
   // -------------------------
@@ -202,7 +201,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     addPokemon({
       name: p.name,
-      frontSprite: p.frontSprite
+      frontSprite: p.frontSprite,
+      backSprite: p.backSprite // ✅ also stored (future-proof)
     });
 
     // 🔥 trigger update event
