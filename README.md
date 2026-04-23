@@ -133,6 +133,11 @@ Dit ging allemaal wel goed, maar ik moet vaak mijn site opnieuw opstarten zodat 
 ### Checkout met Melvin
 vandaag werd ik gerandomized met Aya A. Maar omdat ze niet in het lokaal was heb ik hem wederom gedaan met Melvin. Hij is bezig geweest met styling voor zijn knoppen, heeft hij zijn code schoner gemaakt en ook zijn repo online gezet. Hij gaat morgen aan detailpagina en UI werken. Ik ga morgen mijn randomizer combineren met mijn canvas. Verder wil ik de styling voor allebei die pagina's dan gaan fixen.
 
+## Dag 7 (23 april)
+
+
+Detailpagina vorige volgende
+
 ## Bronnenlijst
 Video over Astro
 Link: https://www.youtube.com/watch?v=dsTXcSeAZq8
@@ -156,6 +161,8 @@ Link: https://tcrf.net/Pok%C3%A9mon_Gold_and_Silver/Unused_Maps
 Trainer spritesheet
 Link: https://www.deviantart.com/scizorbytes/art/Battle-Legend-Red-Gen-4-Overworld-Sprites-917367151
 
+Cyd's View Transitions
+Link: https://www.youtube.com/watch?v=Bq5GVrXO6jE&t=579s
 
 
 

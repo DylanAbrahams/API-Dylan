@@ -14,204 +14,273 @@ const { width = 900, height = 500 } = Astro.props;
 </style>
 
 <script type="module">
-  import { walls } from "../game/walls.js";
-  import { grass } from "../game/grass.js";
+import { walls } from "../game/walls.js";
+import { grass } from "../game/grass.js";
+import { addPokemon } from "../game/pokemonStorage.js";
 
-  const canvas = document.getElementById("main-canvas");
-  const ctx = canvas.getContext("2d");
+/* -------------------- CONFIG -------------------- */
+const ENCOUNTER_CHANCE = 0.10;
+const ENCOUNTER_CHECK_RATE = 0.25;
 
-  const img = new Image();
-  img.src = "/assets/Route1-Tilemap.png";
+/* -------------------- CANVAS -------------------- */
+const canvas = document.getElementById("main-canvas");
+const ctx = canvas.getContext("2d");
 
-  const playerImg = new Image();
-  playerImg.src = "/assets/Trainer_Spritesheet.png";
+ctx.imageSmoothingEnabled = false;
 
-  const viewW = canvas.width;
-  const viewH = canvas.height;
+const img = new Image();
+img.src = "/assets/Route1-Tilemap.png";
 
-  const SPRITE_SIZE = 64;
-  const FRAME_COUNT = 4;
+const battleBg = new Image();
+battleBg.src = "/assets/battle-bg.png";
 
-  let lastTime = 0;
+const playerImg = new Image();
+playerImg.src = "/assets/Trainer_Spritesheet.png";
 
-  // ✅ LOAD SAVE
-  const saved = JSON.parse(localStorage.getItem("playerState"));
+const viewW = canvas.width;
+const viewH = canvas.height;
 
-  const player = {
-    x: saved?.x ?? 970,
-    y: saved?.y ?? 1060,
-    size: 36,
-    speed: 240,
-    frame: 0,
-    direction: saved?.direction ?? 0,
-    moving: false
-  };
+const SPRITE_SIZE = 64;
+const FRAME_COUNT = 4;
 
-  const keys = {};
-  window.addEventListener("keydown", (e) => keys[e.key] = true);
-  window.addEventListener("keyup", (e) => keys[e.key] = false);
+/* -------------------- BATTLE CONFIG -------------------- */
+const BATTLE_CONFIG = {
+  name: {
+    x: 30,
+    y: 50,
+    font: "bold 26px Arial",
+    color: "#fff",
+    shadowBlur: 6
+  },
 
-  function savePlayer() {
-    localStorage.setItem("playerState", JSON.stringify({
-      x: player.x,
-      y: player.y,
-      direction: player.direction
-    }));
+  frontSprite: {
+    scale: 3,
+    anchorX: 0.72,
+    anchorY: 0.5
+  },
+
+  backSprite: {
+    scale: 5,
+    offsetX: 0,
+    offsetY: -170 
+  },
+
+  buttons: {
+    x: canvas.width - 140,
+    catchY: canvas.height - 80,
+    runY: canvas.height - 40
+  }
+};
+
+/* -------------------- STATE -------------------- */
+let lastTime = 0;
+let gameState = "world";
+let currentPokemon = null;
+let enrichedList = [];
+let battleSprite = new Image();
+let backSprite = new Image();
+
+/* -------------------- PLAYER -------------------- */
+const saved = JSON.parse(localStorage.getItem("playerState"));
+
+const player = {
+  x: saved?.x ?? 970,
+  y: saved?.y ?? 1060,
+  size: 36,
+  speed: 240,
+  frame: 0,
+  direction: saved?.direction ?? 0,
+  moving: false
+};
+
+const keys = {};
+window.addEventListener("keydown", e => keys[e.key] = true);
+window.addEventListener("keyup", e => keys[e.key] = false);
+
+function savePlayer() {
+  localStorage.setItem("playerState", JSON.stringify({
+    x: player.x,
+    y: player.y,
+    direction: player.direction
+  }));
+}
+
+/* -------------------- POKEMON -------------------- */
+async function fetchJSON(url) {
+  try {
+    const res = await fetch(url);
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+async function enrich(list) {
+  return await Promise.all(list.map(async p => {
+    const d = await fetchJSON(p.url);
+
+    return {
+      ...p,
+      stats: d?.stats || [],
+      artwork: d?.sprites?.other?.["official-artwork"]?.front_default || "",
+      frontSprite: d?.sprites?.front_default || "",
+      backSprite: d?.sprites?.back_default || "",
+      id: d?.id || 0
+    };
+  }));
+}
+
+async function loadPokemon() {
+  const res = await fetch("https://pokeapi.co/api/v2/pokemon?limit=493");
+  const data = await res.json();
+  enrichedList = await enrich(data.results);
+}
+
+loadPokemon();
+
+/* -------------------- ENCOUNTER -------------------- */
+function weightedRandom(list, target = 50) {
+  const k = 0.08;
+
+  const weights = list.map(p => {
+    const avg = p.stats.reduce((s, x) => s + x.base_stat, 0) / (p.stats.length || 1);
+    return Math.exp(-k * Math.abs(avg - target));
+  });
+
+  let sum = weights.reduce((a, b) => a + b, 0);
+  let rnd = Math.random() * sum;
+
+  for (let i = 0; i < list.length; i++) {
+    if ((rnd -= weights[i]) < 0) return list[i];
   }
 
-  function isColliding(x, y) {
-    const half = player.size / 2;
+  return list[0];
+}
 
-    return walls.some(w =>
-      x + half > w.x &&
-      x - half < w.x + w.w &&
-      y + half > w.y &&
-      y - half < w.y + w.h
-    );
+function startEncounter() {
+  if (!enrichedList.length) return;
+
+  gameState = "encounter";
+  currentPokemon = weightedRandom(enrichedList, 50);
+
+  battleSprite = new Image();
+  battleSprite.src = currentPokemon.frontSprite;
+
+  backSprite = new Image();
+  backSprite.src = currentPokemon.backSprite;
+}
+
+function endEncounter() {
+  gameState = "world";
+  currentPokemon = null;
+}
+
+/* -------------------- COLLISION -------------------- */
+function isColliding(x, y) {
+  const half = player.size / 2;
+
+  return walls.some(w =>
+    x + half > w.x &&
+    x - half < w.x + w.w &&
+    y + half > w.y &&
+    y - half < w.y + w.h
+  );
+}
+
+function isInGrass(x, y) {
+  const half = player.size / 2;
+
+  return grass.some(g =>
+    x + half > g.x &&
+    x - half < g.x + g.w &&
+    y + half > g.y &&
+    y - half < g.y + g.h
+  );
+}
+
+/* -------------------- UPDATE -------------------- */
+let encounterCooldown = 0;
+
+function update(dt) {
+  if (gameState !== "world") return;
+
+  let nextX = player.x;
+  let nextY = player.y;
+
+  player.moving = false;
+
+  const speed = player.speed * dt;
+
+  let dx = 0;
+  let dy = 0;
+
+  if (keys["ArrowDown"] || keys["s"]) { dy++; player.direction = 0; }
+  if (keys["ArrowUp"] || keys["w"]) { dy--; player.direction = 3; }
+  if (keys["ArrowLeft"] || keys["a"]) { dx--; player.direction = 1; }
+  if (keys["ArrowRight"] || keys["d"]) { dx++; player.direction = 2; }
+
+  player.moving = dx !== 0 || dy !== 0;
+
+  if (player.moving) {
+    const len = Math.hypot(dx, dy);
+    dx /= len;
+    dy /= len;
+
+    nextX += dx * speed;
+    nextY += dy * speed;
   }
 
-  function isInGrass(x, y) {
-    const half = player.size / 2;
+  if (!isColliding(nextX, player.y)) player.x = nextX;
+  if (!isColliding(player.x, nextY)) player.y = nextY;
 
-    return grass.some(g =>
-      x + half > g.x &&
-      x - half < g.x + g.w &&
-      y + half > g.y &&
-      y - half < g.y + g.h
-    );
-  }
+  savePlayer();
 
-  let encounterCooldown = 0;
+  if (player.moving && isInGrass(player.x, player.y)) {
+    encounterCooldown += dt;
 
-  function update(deltaTime) {
-    const mapWidth = img.width;
-    const mapHeight = img.height;
-
-    let nextX = player.x;
-    let nextY = player.y;
-
-    player.moving = false;
-
-    const moveAmount = player.speed * deltaTime;
-
-    let dx = 0;
-    let dy = 0;
-
-    if (keys["ArrowDown"] || keys["s"]) {
-      dy += 1;
-      player.direction = 0;
-    }
-
-    if (keys["ArrowUp"] || keys["w"]) {
-      dy -= 1;
-      player.direction = 3;
-    }
-
-    if (keys["ArrowLeft"] || keys["a"]) {
-      dx -= 1;
-      player.direction = 1;
-    }
-
-    if (keys["ArrowRight"] || keys["d"]) {
-      dx += 1;
-      player.direction = 2;
-    }
-
-    player.moving = dx !== 0 || dy !== 0;
-
-    if (player.moving) {
-      const length = Math.hypot(dx, dy);
-      dx /= length;
-      dy /= length;
-
-      nextX += dx * moveAmount;
-      nextY += dy * moveAmount;
-    }
-
-    const half = player.size / 2;
-
-    // X movement
-    const inBoundsX =
-      nextX - half >= 0 &&
-      nextX + half <= mapWidth;
-
-    if (inBoundsX && !isColliding(nextX, player.y)) {
-      player.x = nextX;
-      savePlayer();
-    }
-
-    // Y movement
-    const inBoundsY =
-      nextY - half >= 0 &&
-      nextY + half <= mapHeight;
-
-    if (inBoundsY && !isColliding(player.x, nextY)) {
-      player.y = nextY;
-      savePlayer();
-    }
-
-    // 🌿 RANDOM ENCOUNTER SYSTEM
-    if (player.moving && isInGrass(player.x, player.y)) {
-      encounterCooldown += deltaTime;
-
-      if (encounterCooldown > 0.3) {
-        encounterCooldown = 0;
-
-        const chance = Math.random();
-
-        if (chance < 0.08) {
-          window.location.href = "/randomizer";
-        }
-      }
-    } else {
+    if (encounterCooldown > ENCOUNTER_CHECK_RATE) {
       encounterCooldown = 0;
-    }
-  }
 
-  let frameTimer = 0;
-  const frameSpeed = 0.1;
-
-  function updateAnimation(deltaTime) {
-    if (player.moving) {
-      frameTimer += deltaTime;
-
-      if (frameTimer >= frameSpeed) {
-        player.frame = (player.frame + 1) % FRAME_COUNT;
-        frameTimer = 0;
+      if (Math.random() < ENCOUNTER_CHANCE) {
+        startEncounter();
       }
-    } else {
-      player.frame = 0;
     }
+  } else {
+    encounterCooldown = 0;
   }
+}
 
-  function draw() {
-    ctx.clearRect(0, 0, viewW, viewH);
+/* -------------------- ANIMATION -------------------- */
+let frameTimer = 0;
 
-    const mapWidth = img.width;
-    const mapHeight = img.height;
+function updateAnimation(dt) {
+  if (player.moving) {
+    frameTimer += dt;
 
-    let cameraX = player.x - viewW / 2;
-    let cameraY = player.y - viewH / 2;
-
-    cameraX = Math.max(0, Math.min(cameraX, mapWidth - viewW));
-    cameraY = Math.max(0, Math.min(cameraY, mapHeight - viewH));
-
-    ctx.drawImage(img, cameraX, cameraY, viewW, viewH, 0, 0, viewW, viewH);
-
-    // 🌿 GRASS DEBUG RENDER
-    ctx.fillStyle = "rgba(0, 0, 255, 0.3)";
-    for (const g of grass) {
-      ctx.fillRect(g.x - cameraX, g.y - cameraY, g.w, g.h);
+    if (frameTimer > 0.1) {
+      player.frame = (player.frame + 1) % FRAME_COUNT;
+      frameTimer = 0;
     }
+  } else {
+    player.frame = 0;
+  }
+}
 
-    // 🔴 WALL DEBUG
-    ctx.fillStyle = "rgba(255,0,0,0.3)";
-    for (const w of walls) {
-      ctx.fillRect(w.x - cameraX, w.y - cameraY, w.w, w.h);
-    }
+/* -------------------- DRAW -------------------- */
+function draw() {
+  ctx.clearRect(0, 0, viewW, viewH);
 
-    const screenX = player.x - cameraX;
-    const screenY = player.y - cameraY;
+  let camX = player.x - viewW / 2;
+  let camY = player.y - viewH / 2;
+
+  camX = Math.max(0, Math.min(camX, img.width - viewW));
+  camY = Math.max(0, Math.min(camY, img.height - viewH));
+
+  if (gameState === "world") {
+    ctx.drawImage(img, camX, camY, viewW, viewH, 0, 0, viewW, viewH);
+
+    const sx = player.x - camX;
+    const sy = player.y - camY;
 
     ctx.drawImage(
       playerImg,
@@ -219,33 +288,120 @@ const { width = 900, height = 500 } = Astro.props;
       player.direction * SPRITE_SIZE,
       SPRITE_SIZE,
       SPRITE_SIZE,
-      screenX - SPRITE_SIZE / 2,
-      screenY - SPRITE_SIZE / 2,
+      sx - SPRITE_SIZE / 2,
+      sy - SPRITE_SIZE / 2,
       SPRITE_SIZE,
       SPRITE_SIZE
     );
   }
 
-  function loop(currentTime) {
-    const deltaTime = (currentTime - lastTime) / 1000;
-    lastTime = currentTime;
+  /* -------------------- BATTLE -------------------- */
+  if (gameState === "encounter" && currentPokemon) {
+    ctx.drawImage(battleBg, 0, 0, viewW, viewH);
 
-    update(deltaTime);
-    updateAnimation(deltaTime);
-    draw();
+    /* NAME */
+    ctx.font = BATTLE_CONFIG.name.font;
+    ctx.fillStyle = BATTLE_CONFIG.name.color;
+    ctx.shadowColor = "black";
+    ctx.shadowBlur = BATTLE_CONFIG.name.shadowBlur;
 
-    requestAnimationFrame(loop);
+    ctx.fillText(
+      currentPokemon.name.toUpperCase(),
+      BATTLE_CONFIG.name.x,
+      BATTLE_CONFIG.name.y
+    );
+
+    ctx.shadowBlur = 0;
+
+    /* FRONT SPRITE */
+    if (battleSprite.complete && battleSprite.naturalWidth > 0) {
+      const cfg = BATTLE_CONFIG.frontSprite;
+
+      const drawW = battleSprite.naturalWidth * cfg.scale;
+      const drawH = battleSprite.naturalHeight * cfg.scale;
+
+      const anchorX = viewW * cfg.anchorX;
+      const anchorY = viewH * cfg.anchorY;
+
+      const x = anchorX - drawW / 2;
+      const y = anchorY - drawH / 2;
+
+      ctx.drawImage(battleSprite, x, y, drawW, drawH);
+    }
+
+    /* BACK SPRITE */
+    if (backSprite.complete && backSprite.naturalWidth > 0) {
+      const cfg = BATTLE_CONFIG.backSprite;
+
+      const bw = backSprite.naturalWidth * cfg.scale;
+      const bh = backSprite.naturalHeight * cfg.scale;
+
+      const x = cfg.offsetX;
+      const y = viewH - bh - cfg.offsetY;
+
+      ctx.drawImage(backSprite, x, y, bw, bh);
+    }
+
+    /* BUTTONS */
+    drawButton("Catch", BATTLE_CONFIG.buttons.x, BATTLE_CONFIG.buttons.catchY);
+    drawButton("Run", BATTLE_CONFIG.buttons.x, BATTLE_CONFIG.buttons.runY);
   }
+}
 
-  let loaded = 0;
-  function checkStart() {
-    loaded++;
-    if (loaded === 2) {
-      lastTime = performance.now();
-      requestAnimationFrame(loop);
+/* -------------------- BUTTON -------------------- */
+function drawButton(text, x, y) {
+  ctx.fillStyle = "#222";
+  ctx.fillRect(x, y, 100, 30);
+
+  ctx.fillStyle = "white";
+  ctx.font = "14px Arial";
+  ctx.fillText(text, x + 20, y + 20);
+}
+
+/* -------------------- CLICK -------------------- */
+canvas.addEventListener("click", async (e) => {
+  if (gameState !== "encounter") return;
+
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+
+  if (x > viewW - 140 && x < viewW - 40 && y > viewH - 80 && y < viewH - 50) {
+    const rateRes = await fetchJSON(`https://pokeapi.co/api/v2/pokemon-species/${currentPokemon.id}`);
+    const rate = rateRes?.capture_rate || 45;
+
+    if (Math.random() < rate / 255) {
+      addPokemon({
+        name: currentPokemon.name,
+        frontSprite: currentPokemon.frontSprite
+      });
+
+      window.dispatchEvent(new Event("pokemon-updated"));
+      endEncounter();
     }
   }
 
-  img.onload = checkStart;
-  playerImg.onload = checkStart;
+  if (x > viewW - 140 && x < viewW - 40 && y > viewH - 40 && y < viewH - 10) {
+    endEncounter();
+  }
+});
+
+/* -------------------- LOOP -------------------- */
+function loop(t) {
+  const dt = (t - lastTime) / 1000;
+  lastTime = t;
+
+  update(dt);
+  updateAnimation(dt);
+  draw();
+
+  requestAnimationFrame(loop);
+}
+
+img.onload = () => {
+  playerImg.onload = () => {
+    lastTime = performance.now();
+    requestAnimationFrame(loop);
+  };
+};
 </script>
