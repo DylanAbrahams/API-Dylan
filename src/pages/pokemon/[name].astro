@@ -30,6 +30,24 @@ let species: SpeciesType | null = null;
 const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${name}`);
 if (res.ok) pokemon = await res.json();
 
+/* -------- PREV / NEXT -------- */
+let prevPokemon: PokemonType | null = null;
+let nextPokemon: PokemonType | null = null;
+
+if (pokemon) {
+  const prevId = pokemon.id > 1 ? pokemon.id - 1 : null;
+  const nextId = pokemon.id + 1;
+
+  if (prevId) {
+    const resPrev = await fetch(`https://pokeapi.co/api/v2/pokemon/${prevId}`);
+    if (resPrev.ok) prevPokemon = await resPrev.json();
+  }
+
+  const resNext = await fetch(`https://pokeapi.co/api/v2/pokemon/${nextId}`);
+  if (resNext.ok) nextPokemon = await resNext.json();
+}
+/* ----------------------------- */
+
 if (pokemon) {
   const speciesRes = await fetch(
     `https://pokeapi.co/api/v2/pokemon-species/${pokemon.name}`
@@ -48,23 +66,12 @@ export async function getStaticPaths() {
 
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
-const primaryType =
-  pokemon?.types?.[0]?.type?.name ?? "normal";
+const primaryType = pokemon?.types?.[0]?.type?.name ?? "normal";
 
-const hp =
-  pokemon?.stats?.find(s => s.stat.name === "hp")?.base_stat ?? 0;
+const getStat = (name: string, p: PokemonType) =>
+  p.stats.find(s => s.stat.name === name)?.base_stat ?? 0;
 
-const atk =
-  pokemon?.stats?.find(s => s.stat.name === "attack")?.base_stat ?? 0;
-
-const def =
-  pokemon?.stats?.find(s => s.stat.name === "defense")?.base_stat ?? 0;
-
-const spd =
-  pokemon?.stats?.find(s => s.stat.name === "speed")?.base_stat ?? 0;
-
-const moves =
-  pokemon?.moves?.slice(0, 2) ?? [];
+const movesMain = pokemon?.moves?.slice(0, 2) ?? [];
 
 const speciesName =
   species?.genera?.find(g => g.language.name === "en")?.genus ??
@@ -75,73 +82,206 @@ const speciesName =
 
 {pokemon ? (
   <div class="page">
-    <div class="card-shell">
-      <div class={`card-face type-${primaryType}`}>
 
-        <!-- HEADER (TCG STYLE) -->
-        <div class="top">
-          <div class="name">{cap(pokemon.name)}</div>
-          <div class="hp">HP {hp}</div>
-        </div>
+    <div class="card-row">
 
-        <div class="type-line">
-          {pokemon.types.map(t => cap(t.type.name)).join(" / ")} Pokémon
-        </div>
+      <!-- PREVIOUS CARD -->
+      {prevPokemon && (
+        <a href={`/pokemon/${prevPokemon.name}`} class="side-card prev-card">
+          <div class="card-shell">
+            <div class={`card-face type-${prevPokemon.types[0].type.name}`}>
 
-        <!-- ART -->
-        <div class="art">
-          <img
-            src={pokemon.sprites.other["official-artwork"].front_default}
-            alt={pokemon.name}
-          />
-        </div>
+              <div class="top">
+                <div class="name">{cap(prevPokemon.name)}</div>
+                <div class="hp">
+                  HP {getStat("hp", prevPokemon)}
+                </div>
+              </div>
 
-        <!-- INFO STRIP -->
-        <div class="info-line">
-          <span>{speciesName}</span>
-          <span class="dot">•</span>
-          <span>Height: {pokemon.height / 10}m</span>
-          <span class="dot">•</span>
-          <span>Weight: {pokemon.weight / 10}kg</span>
-        </div>
+              <div class="type-line">
+                {prevPokemon.types.map(t => cap(t.type.name)).join(" / ")} Pokémon
+              </div>
 
-        <!-- ABILITY -->
-        {pokemon.abilities.length > 0 && (
-          <div class="box">
-            <div class="title">Ability</div>
-            <div class="row">
-              ⚡ {cap(pokemon.abilities[0].ability.name)}
-              {pokemon.abilities[0].is_hidden && (
-                <span class="tag">Hidden</span>
+              <div class="art">
+                <img
+                  src={prevPokemon.sprites.other["official-artwork"].front_default}
+                  alt={prevPokemon.name}
+                />
+              </div>
+
+              <!-- ADDED FULL INFO -->
+              <div class="info-line">
+                <span>{prevPokemon.name}</span>
+                <span class="dot">•</span>
+                <span>Height: {prevPokemon.height / 10}m</span>
+                <span class="dot">•</span>
+                <span>Weight: {prevPokemon.weight / 10}kg</span>
+              </div>
+
+              {prevPokemon.abilities.length > 0 && (
+                <div class="box">
+                  <div class="title">Ability</div>
+                  <div class="row">
+                    ⚡ {cap(prevPokemon.abilities[0].ability.name)}
+                    {prevPokemon.abilities[0].is_hidden && (
+                      <span class="tag">Hidden</span>
+                    )}
+                  </div>
+                </div>
               )}
+
+              <div class="box">
+                <div class="title">Attacks</div>
+                {prevPokemon.moves.slice(0, 2).map((m, i) => (
+                  <div class="attack">
+                    <div class="attack-name">
+                      {cap(m.move.name.replace("-", " "))}
+                    </div>
+                    <div class="attack-dmg">{30 + i * 20}</div>
+                  </div>
+                ))}
+              </div>
+
+              <div class="footer">
+                <span>ATK {getStat("attack", prevPokemon)}</span>
+                <span>DEF {getStat("defense", prevPokemon)}</span>
+                <span>SPD {getStat("speed", prevPokemon)}</span>
+              </div>
+
             </div>
           </div>
-        )}
+        </a>
+      )}
 
-        <!-- ATTACKS (MAX 2) -->
-        <div class="box">
-          <div class="title">Attacks</div>
+      <!-- MAIN CARD -->
+      <div class="card-shell">
+        <div class={`card-face type-${primaryType}`}>
 
-          {moves.map((m, i) => (
-            <div class="attack">
-              <div class="attack-name">
-                {cap(m.move.name.replace("-", " "))}
-              </div>
-              <div class="attack-dmg">
-                {30 + i * 20}
+          <div class="top">
+            <div class="name">{cap(pokemon.name)}</div>
+            <div class="hp">HP {getStat("hp", pokemon)}</div>
+          </div>
+
+          <div class="type-line">
+            {pokemon.types.map(t => cap(t.type.name)).join(" / ")} Pokémon
+          </div>
+
+          <div class="art">
+            <img
+              src={pokemon.sprites.other["official-artwork"].front_default}
+              alt={pokemon.name}
+            />
+          </div>
+
+          <div class="info-line">
+            <span>{speciesName}</span>
+            <span class="dot">•</span>
+            <span>Height: {pokemon.height / 10}m</span>
+            <span class="dot">•</span>
+            <span>Weight: {pokemon.weight / 10}kg</span>
+          </div>
+
+          {pokemon.abilities.length > 0 && (
+            <div class="box">
+              <div class="title">Ability</div>
+              <div class="row">
+                ⚡ {cap(pokemon.abilities[0].ability.name)}
+                {pokemon.abilities[0].is_hidden && (
+                  <span class="tag">Hidden</span>
+                )}
               </div>
             </div>
-          ))}
-        </div>
+          )}
 
-        <!-- FOOTER STATS -->
-        <div class="footer">
-          <span>ATK {atk}</span>
-          <span>DEF {def}</span>
-          <span>SPD {spd}</span>
-        </div>
+          <div class="box">
+            <div class="title">Attacks</div>
+            {movesMain.map((m, i) => (
+              <div class="attack">
+                <div class="attack-name">
+                  {cap(m.move.name.replace("-", " "))}
+                </div>
+                <div class="attack-dmg">{30 + i * 20}</div>
+              </div>
+            ))}
+          </div>
 
+          <div class="footer">
+            <span>ATK {getStat("attack", pokemon)}</span>
+            <span>DEF {getStat("defense", pokemon)}</span>
+            <span>SPD {getStat("speed", pokemon)}</span>
+          </div>
+
+        </div>
       </div>
+
+      <!-- NEXT CARD -->
+      {nextPokemon && (
+        <a href={`/pokemon/${nextPokemon.name}`} class="side-card next-card">
+          <div class="card-shell">
+            <div class={`card-face type-${nextPokemon.types[0].type.name}`}>
+
+              <div class="top">
+                <div class="name">{cap(nextPokemon.name)}</div>
+                <div class="hp">
+                  HP {getStat("hp", nextPokemon)}
+                </div>
+              </div>
+
+              <div class="type-line">
+                {nextPokemon.types.map(t => cap(t.type.name)).join(" / ")} Pokémon
+              </div>
+
+              <div class="art">
+                <img
+                  src={nextPokemon.sprites.other["official-artwork"].front_default}
+                  alt={nextPokemon.name}
+                />
+              </div>
+
+              <!-- ADDED FULL INFO -->
+              <div class="info-line">
+                <span>{nextPokemon.name}</span>
+                <span class="dot">•</span>
+                <span>Height: {nextPokemon.height / 10}m</span>
+                <span class="dot">•</span>
+                <span>Weight: {nextPokemon.weight / 10}kg</span>
+              </div>
+
+              {nextPokemon.abilities.length > 0 && (
+                <div class="box">
+                  <div class="title">Ability</div>
+                  <div class="row">
+                    ⚡ {cap(nextPokemon.abilities[0].ability.name)}
+                    {nextPokemon.abilities[0].is_hidden && (
+                      <span class="tag">Hidden</span>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              <div class="box">
+                <div class="title">Attacks</div>
+                {nextPokemon.moves.slice(0, 2).map((m, i) => (
+                  <div class="attack">
+                    <div class="attack-name">
+                      {cap(m.move.name.replace("-", " "))}
+                    </div>
+                    <div class="attack-dmg">{30 + i * 20}</div>
+                  </div>
+                ))}
+              </div>
+
+              <div class="footer">
+                <span>ATK {getStat("attack", nextPokemon)}</span>
+                <span>DEF {getStat("defense", nextPokemon)}</span>
+                <span>SPD {getStat("speed", nextPokemon)}</span>
+              </div>
+
+            </div>
+          </div>
+        </a>
+      )}
+
     </div>
   </div>
 ) : (
@@ -149,35 +289,53 @@ const speciesName =
 )}
 
 <style>
-/* PAGE */
-/* PAGE */
 .page {
-  min-height: 100vh;
-
+  min-height: 80vh;
   display: flex;
   justify-content: center;
   align-items: center;
-
-  /* base color matches your global */
   background: #f0f8ff;
-
-  /* subtle lab grid overlay */
-  background-image:
-    linear-gradient(to right, rgba(0,0,0,0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(0,0,0,0.04) 1px, transparent 1px);
-
-  background-size: 40px 40px;
 }
 
-/* CARD BASE (your style preserved) */
+/* ROW */
+.card-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+/* SIDE CARDS */
+.side-card {
+  transform: scale(0.75);
+  opacity: 0.5;
+  transition: all 0.25s ease;
+  text-decoration: none;
+}
+
+.side-card:hover {
+  transform: scale(0.85);
+  opacity: 0.85;
+}
+
+.prev-card {
+  rotate:-3deg;
+}
+
+.next-card {
+  rotate:3deg;
+}
+
+/* prevent nested interaction issues */
+.side-card .card-shell {
+  pointer-events: none;
+}
+
 .card-shell {
   width: 380px;
   background: linear-gradient(145deg, #ffe066, #f2c94c);
-
-  box-shadow:
-    0 20px 60px rgba(0,0,0,0.45),
-    inset 0 0 0 2px rgba(255,255,255,0.25);
-
+  box-shadow: 0 20px 60px rgba(0,0,0,0.45),
+              inset 0 0 0 2px rgba(255,255,255,0.25);
   padding: 12px;
 }
 
@@ -187,18 +345,25 @@ const speciesName =
   color: #111;
 }
 
-/* TYPES (UNCHANGED) */
+.type-normal { background: linear-gradient(#f5f5f5, #e0e0e0); }
 .type-fire { background: linear-gradient(#fff3e0, #ffe0b2); }
 .type-water { background: linear-gradient(#e3f2fd, #bbdefb); }
-.type-grass { background: linear-gradient(#e8f5e9, #c8e6c9); }
 .type-electric { background: linear-gradient(#fffde7, #fff59d); }
-.type-psychic { background: linear-gradient(#fce4ec, #f8bbd0); }
+.type-grass { background: linear-gradient(#e8f5e9, #c8e6c9); }
 .type-ice { background: linear-gradient(#e0f7fa, #b2ebf2); }
+.type-fighting { background: linear-gradient(#ffebee, #ef9a9a); }
+.type-poison { background: linear-gradient(#f3e5f5, #ce93d8); }
+.type-ground { background: linear-gradient(#efebe9, #d7ccc8); }
+.type-flying { background: linear-gradient(#e1f5fe, #b3e5fc); }
+.type-psychic { background: linear-gradient(#fce4ec, #f8bbd0); }
+.type-bug { background: linear-gradient(#f1f8e9, #dcedc8); }
+.type-rock { background: linear-gradient(#fbe9e7, #bcaaa4); }
+.type-ghost { background: linear-gradient(#ede7f6, #b39ddb); }
+.type-dragon { background: linear-gradient(#e8eaf6, #9fa8da); }
 .type-dark { background: linear-gradient(#efebe9, #bcaaa4); }
+.type-steel { background: linear-gradient(#eceff1, #b0bec5); }
 .type-fairy { background: linear-gradient(#fce4ec, #f48fb1); }
-.type-normal { background: linear-gradient(#f5f5f5, #e0e0e0); }
 
-/* HEADER (more spacing, same vibe) */
 .top {
   display: flex;
   justify-content: space-between;
@@ -211,7 +376,6 @@ const speciesName =
   color: #c62828;
 }
 
-/* TYPE LINE */
 .type-line {
   font-size: 12px;
   margin-bottom: 8px;
@@ -219,7 +383,6 @@ const speciesName =
   box-shadow: inset 0 -1px 0 rgba(0,0,0,0.3);
 }
 
-/* ART */
 .art {
   background: rgba(255,255,255,0.85);
   height: 240px;
@@ -232,7 +395,6 @@ const speciesName =
   max-height: 220px;
 }
 
-/* INFO STRIP (cleaner alignment) */
 .info-line {
   display: flex;
   justify-content: center;
@@ -246,9 +408,10 @@ const speciesName =
   text-transform: capitalize;
 }
 
-.dot { opacity: 0.6; }
+.dot {
+  opacity: 0.6;
+}
 
-/* BOXES (same style, cleaner spacing) */
 .box {
   background: rgba(255,255,255,0.3);
   margin-bottom: 8px;
@@ -262,14 +425,12 @@ const speciesName =
   margin-bottom: 6px;
 }
 
-/* ROWS */
 .row {
   display: flex;
   justify-content: space-between;
   font-size: 12px;
 }
 
-/* ATTACKS (TCG feel preserved) */
 .attack {
   display: flex;
   justify-content: space-between;
@@ -282,15 +443,6 @@ const speciesName =
   border-top: none;
 }
 
-.attack-name {
-  text-transform: capitalize;
-}
-
-.attack-dmg {
-  font-weight: bold;
-}
-
-/* FOOTER */
 .footer {
   display: flex;
   justify-content: space-between;
@@ -300,7 +452,6 @@ const speciesName =
   opacity: 0.85;
 }
 
-/* TAG */
 .tag {
   font-size: 9px;
   background: rgba(0,0,0,0.1);
@@ -309,5 +460,4 @@ const speciesName =
   border-radius: 4px;
 }
 </style>
-
 </MainLayout>
