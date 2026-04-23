@@ -13,7 +13,7 @@ const { width = 900, height = 500 } = Astro.props;
   }
 </style>
 
-<script type="module">
+<script type="module" client:load>
 import { walls } from "../game/walls.js";
 import { grass } from "../game/grass.js";
 import { addPokemon } from "../game/pokemonStorage.js";
@@ -28,6 +28,7 @@ const ctx = canvas.getContext("2d");
 
 ctx.imageSmoothingEnabled = false;
 
+/* -------------------- IMAGES -------------------- */
 const img = new Image();
 img.src = "/assets/Route1-Tilemap.png";
 
@@ -105,7 +106,7 @@ function savePlayer() {
   }));
 }
 
-/* -------------------- POKEMON -------------------- */
+/* -------------------- API -------------------- */
 async function fetchJSON(url) {
   try {
     const res = await fetch(url);
@@ -295,60 +296,44 @@ function draw() {
     );
   }
 
-  /* -------------------- BATTLE -------------------- */
   if (gameState === "encounter" && currentPokemon) {
     ctx.drawImage(battleBg, 0, 0, viewW, viewH);
 
-    /* NAME */
     ctx.font = BATTLE_CONFIG.name.font;
     ctx.fillStyle = BATTLE_CONFIG.name.color;
     ctx.shadowColor = "black";
     ctx.shadowBlur = BATTLE_CONFIG.name.shadowBlur;
 
-    ctx.fillText(
-      currentPokemon.name.toUpperCase(),
-      BATTLE_CONFIG.name.x,
-      BATTLE_CONFIG.name.y
-    );
+    ctx.fillText(currentPokemon.name.toUpperCase(), BATTLE_CONFIG.name.x, BATTLE_CONFIG.name.y);
 
     ctx.shadowBlur = 0;
 
-    /* FRONT SPRITE */
-    if (battleSprite.complete && battleSprite.naturalWidth > 0) {
+    if (battleSprite.complete) {
       const cfg = BATTLE_CONFIG.frontSprite;
 
       const drawW = battleSprite.naturalWidth * cfg.scale;
       const drawH = battleSprite.naturalHeight * cfg.scale;
 
-      const anchorX = viewW * cfg.anchorX;
-      const anchorY = viewH * cfg.anchorY;
-
-      const x = anchorX - drawW / 2;
-      const y = anchorY - drawH / 2;
+      const x = viewW * cfg.anchorX - drawW / 2;
+      const y = viewH * cfg.anchorY - drawH / 2;
 
       ctx.drawImage(battleSprite, x, y, drawW, drawH);
     }
 
-    /* BACK SPRITE */
-    if (backSprite.complete && backSprite.naturalWidth > 0) {
+    if (backSprite.complete) {
       const cfg = BATTLE_CONFIG.backSprite;
 
       const bw = backSprite.naturalWidth * cfg.scale;
       const bh = backSprite.naturalHeight * cfg.scale;
 
-      const x = cfg.offsetX;
-      const y = viewH - bh - cfg.offsetY;
-
-      ctx.drawImage(backSprite, x, y, bw, bh);
+      ctx.drawImage(backSprite, cfg.offsetX, viewH - bh - cfg.offsetY, bw, bh);
     }
 
-    /* BUTTONS */
     drawButton("Catch", BATTLE_CONFIG.buttons.x, BATTLE_CONFIG.buttons.catchY);
     drawButton("Run", BATTLE_CONFIG.buttons.x, BATTLE_CONFIG.buttons.runY);
   }
 }
 
-/* -------------------- BUTTON -------------------- */
 function drawButton(text, x, y) {
   ctx.fillStyle = "#222";
   ctx.fillRect(x, y, 100, 30);
