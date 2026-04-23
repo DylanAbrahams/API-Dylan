@@ -13,7 +13,7 @@ const { width = 900, height = 500 } = Astro.props;
   }
 </style>
 
-<script type="module">
+<script type="module" client:load>
 import { walls } from "../game/walls.js";
 import { grass } from "../game/grass.js";
 import { addPokemon, loadPokemon } from "../game/pokemonStorage.js";
