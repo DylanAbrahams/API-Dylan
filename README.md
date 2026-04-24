@@ -134,9 +134,22 @@ Dit ging allemaal wel goed, maar ik moet vaak mijn site opnieuw opstarten zodat 
 vandaag werd ik gerandomized met Aya A. Maar omdat ze niet in het lokaal was heb ik hem wederom gedaan met Melvin. Hij is bezig geweest met styling voor zijn knoppen, heeft hij zijn code schoner gemaakt en ook zijn repo online gezet. Hij gaat morgen aan detailpagina en UI werken. Ik ga morgen mijn randomizer combineren met mijn canvas. Verder wil ik de styling voor allebei die pagina's dan gaan fixen.
 
 ## Dag 7 (23 april)
-
+### Werkzaamheden
 
 Detailpagina vorige volgende
+
+Canvas battle image
+
+Front sprites enemies
+
+Back sprites jezelf
+
+Localstorage
+
+Canvas laadt soms niet in render.
+
+### Checkout met Romy
+Vandaag werd ik gerandomized met Thije, maar hij was er niet. Zij heeft een Spotify API en daarin kun je liedjes genereren en opslaan. Zij had moeite met nieuwe liedjes genereren via de API die ze gebruikt, dus heeft ze voor nu wat dummy songs in een JSON staan. Ik heb laten zien wat ik heb. Ik heb vandaag veel in het canvas gewerkt. Vandaag was de laatste les, ik zou het leuk vinden om nog een swap functie toe te voegen en heel graag als het kan een battle functie. Maar er werd wel aangeraden om dat alleen te doen als dat echt kan aangezien dat wel een complex project is.
 
 ## Bronnenlijst
 Video over Astro
@@ -164,7 +177,9 @@ Link: https://www.deviantart.com/scizorbytes/art/Battle-Legend-Red-Gen-4-Overwor
 Cyd's View Transitions
 Link: https://www.youtube.com/watch?v=Bq5GVrXO6jE&t=579s
 
-
+Battle Achtergrond
+Link PNG: https://i.imgur.com/lhu26US.png
+Link Post: https://www.pokecommunity.com/threads/inserting-battle-backgrounds.302401/ 
 
 
 
