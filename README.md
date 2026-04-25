@@ -151,6 +151,28 @@ Canvas laadt soms niet in render.
 ### Checkout met Romy
 Vandaag werd ik gerandomized met Thije, maar hij was er niet. Zij heeft een Spotify API en daarin kun je liedjes genereren en opslaan. Zij had moeite met nieuwe liedjes genereren via de API die ze gebruikt, dus heeft ze voor nu wat dummy songs in een JSON staan. Ik heb laten zien wat ik heb. Ik heb vandaag veel in het canvas gewerkt. Vandaag was de laatste les, ik zou het leuk vinden om nog een swap functie toe te voegen en heel graag als het kan een battle functie. Maar er werd wel aangeraden om dat alleen te doen als dat echt kan aangezien dat wel een complex project is.
 
+## Week 4 overzicht
+
+### Gesprek met Cyd & clubje
+Design:
+- Overzichtspagina moet beter
+- Navigatie moet beter of er helemaal uit
+- Randomizer hoeft niet in de navigatie  
+- Detailpagina achtergrond plaatje
+- Detailpagina View transitiions 
+- Canvas groter maken
+- Footer als side panel
+
+Canvas Logica:
+- Verschillende pokemon in elk gras
+- Pokemon swappen
+- Muren boven/onder
+- Minder pokemon, kijken of dat sneller laadt
+- Starter Pokemon
+- Vechten? :D
+- Muziek / SFX
+- Betere knoppen tijdens encounter
+
 ## Bronnenlijst
 Video over Astro
 Link: https://www.youtube.com/watch?v=dsTXcSeAZq8
