@@ -78,7 +78,7 @@ Pokemon Overzicht
 
 <img src="public/readme-img/Week2-overzichtspagina" alt="Afbeelding van het week 2 overzichtspagina" height=400px>
 
-<img src="img/readme-img/Week2-overzichtspagina" alt="Afbeelding van het week 2 overzichtspagina" height=400px>
+<img src="src/assets/readme-img/Week2-overzichtspagina" alt="Afbeelding van het week 2 overzichtspagina" height=400px>
 
 Pokemon Detail
 
