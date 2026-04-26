@@ -72,14 +72,17 @@ Vandaag werd ik gerandomized met Maja. Zij is bezig met een DND Character builde
 
 ## Week 2 Overzicht
 
-Astro werkend
+Astro werkend, layouts, components etc
 
 Pokemon Overzicht
 
+<img src="public/readme-img/Week2-overzichtspagina" alt="Afbeelding van het week 2 overzichtspagina" height=400px>
+
+<img src="img/readme-img/Week2-overzichtspagina" alt="Afbeelding van het week 2 overzichtspagina" height=400px>
+
 Pokemon Detail
 
-
-
+<img src="img/readme-img/Week2-detailpagina" alt="Afbeelding van het week 2 detailspagina" height=400px>
 
 
 
@@ -120,6 +123,12 @@ Wederom heb ik mijn checkout met Melvin gedaan. Hij heeft meer progressie gemaak
 
 Alles over Canvas
 
+
+
+Foto van de wereld
+
+Foto van hitboxes
+
 ## Dag 6 (22 april)
 ### Werkzaamheden
 Vandaag hebben we een college gehad over onze site online zetten op onrender. Dit ging wel goed, ik had na wat hulp van Jad hem succesvol online gekregen. Wel waren mijn canvas en mijn randomizer gesloopt. Dit kwam omdat de canvas images niet werden opgehaald aangezien deze niet te bereiken waren door de renderer. Ditzelfde geldt voor het script voor de localstorage. Toen ik eenmaal alles verplaatst had deed alles het weer goed.
@@ -152,6 +161,10 @@ Canvas laadt soms niet in render.
 Vandaag werd ik gerandomized met Thije, maar hij was er niet. Zij heeft een Spotify API en daarin kun je liedjes genereren en opslaan. Zij had moeite met nieuwe liedjes genereren via de API die ze gebruikt, dus heeft ze voor nu wat dummy songs in een JSON staan. Ik heb laten zien wat ik heb. Ik heb vandaag veel in het canvas gewerkt. Vandaag was de laatste les, ik zou het leuk vinden om nog een swap functie toe te voegen en heel graag als het kan een battle functie. Maar er werd wel aangeraden om dat alleen te doen als dat echt kan aangezien dat wel een complex project is.
 
 ## Week 4 overzicht
+
+Fotos
+
+
 
 ### Gesprek met Cyd & clubje
 Design:
