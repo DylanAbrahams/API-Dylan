@@ -76,13 +76,13 @@ Astro werkend, layouts, components etc
 
 Pokemon Overzicht
 
-<img src="public/readme-img/Week2-overzichtspagina" alt="Afbeelding van het week 2 overzichtspagina" height=400px>
+<img src="public/readme-img/Week2-overzichtspagina.png" alt="Afbeelding van het week 2 overzichtspagina" height=400px>
 
-<img src="src/assets/readme-img/Week2-overzichtspagina" alt="Afbeelding van het week 2 overzichtspagina" height=400px>
+<img src="src/assets/readme-img/Week2-overzichtspagina.png" alt="Afbeelding van het week 2 overzichtspagina" height=400px>
 
 Pokemon Detail
 
-<img src="img/readme-img/Week2-detailpagina" alt="Afbeelding van het week 2 detailspagina" height=400px>
+<img src="img/readme-img/Week2-detailpagina.png" alt="Afbeelding van het week 2 detailspagina" height=400px>
 
 
 
