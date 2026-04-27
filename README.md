@@ -21,12 +21,20 @@ Content API: Open Trivia Database (OpenTDB)
 Web API #1: Localstorage
 Web API #2: 
 
+Ik had hier een klein prototype van gemaakt waarin random vragen gegenereerd worden met 4 antwoorden, waarvan 3 fout en 1 goed is.
+
+<img src="src/assets/readme-img/Week1-game-quiz-test.png" alt="Afbeelding van week 1 quiz prototype" height=400px>
+
 Multiplayer quiz: websocket api
 
 2 - Interactief pokemon spel. Je kunt pokemon vinden op basis van verschillende factoren, zoals tijd en locatie en kunt een team samen stellen. Verder kun je met een controller rondbewegen in een wereld weergegeven op een canvas.
 Content API: PokeAPI
 Web API #1: Gamepad
 Web API #2: Canvas
+
+Ik heb het voor elkaar gekregen om pokemon vanuit de API in te laden.
+
+<img src="src/assets/readme-img/Week1-pokeapi-test.png" alt="Afbeelding van week 1 quiz prototype" height=400px>
 
 3 - Levels uit een API. Er worden verschillende levels uit een API opgehaald die je kunt spelen. Ik heb nog geen concreet plan. Denk aan verschillende platformer levels, doolhoven, puzzels etc.
 Content API: ?
@@ -76,15 +84,16 @@ Astro werkend, layouts, components etc
 
 Pokemon Overzicht
 
-<img src="public/readme-img/Week2-overzichtspagina.png" alt="Afbeelding van het week 2 overzichtspagina" height=400px>
 
 <img src="src/assets/readme-img/Week2-overzichtspagina.png" alt="Afbeelding van het week 2 overzichtspagina" height=400px>
 
 Pokemon Detail
 
-<img src="img/readme-img/Week2-detailpagina.png" alt="Afbeelding van het week 2 detailspagina" height=400px>
+<img src="src/assets/readme-img/Week2-detailpagina.png" alt="Afbeelding van het week 2 detailspagina" height=400px>
 
+Pokemon Randomizer
 
+<img src="src/assets/readme-img/Week2-randomizer.png" alt="Afbeelding van de week 2 randomizer" height=400px>
 
 Verder had ik vrijdag nog het gesprek met mijn clubje + Cyd, hiervan de aantekeningen:
 - Hover state moet weg als er geen klik is, grote pet peeve van Cyd
