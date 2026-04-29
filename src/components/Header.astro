@@ -1,93 +1,81 @@
 ---
 const currentPath = Astro.url.pathname;
+
+const isMap = currentPath.startsWith("/world");
+
+const href = isMap ? "/" : "/world";
+const label = isMap ? "POKEDEX" : "WORLD";
 ---
 
-<header class="header">
-  <div class="container">
-
-    <div class="brand">
-      <h1>Pokédex</h1>
-      <span class="subtitle">Research Interface</span>
-    </div>
-
-    <nav class="nav-links">
-      <a href="/" class={currentPath === "/" ? "active" : ""}>
-        Overzicht
-      </a>
-
-      <a href="/randomizer" class={currentPath === "/randomizer" ? "active" : ""}>
-        Randomizer
-      </a>
-
-      <a href="/world" class={currentPath === "/world" ? "active" : ""}>
-        Wereld
-      </a>
-    </nav>
-
-  </div>
-</header>
+<div class="hud">
+  <a href={href} class="btn">
+    {label}
+  </a>
+</div>
 
 <style>
-  .header {
-    background: #ffffff;
-    border-bottom: 2px solid #e5e7eb;
-    position: sticky;
-    top: 0;
-    z-index: 10;
+  .hud {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 999;
   }
 
-  .container {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 1rem 1.5rem;
+  .btn {
+    position: absolute;
+    top: 18px;
+    right: 18px;
 
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
+    pointer-events: auto;
 
-  .brand {
-    display: flex;
-    flex-direction: column;
-  }
+    padding: 0.75rem 1.1rem;
 
-  .brand h1 {
-    margin: 0;
-    font-size: 1.2rem;
-    letter-spacing: 1px;
-  }
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 2px;
 
-  .subtitle {
-    font-size: 0.7rem;
-    color: #6b7280;
-    letter-spacing: 1px;
-  }
-
-  .nav-links {
-    display: flex;
-    gap: 0.5rem;
-  }
-
-  .nav-links a {
+    text-transform: uppercase;
     text-decoration: none;
-    font-size: 0.85rem;
-    color: #374151;
 
-    padding: 0.4rem 0.7rem;
-    border-radius: 6px;
+    color: #fff;
 
-    transition: background 0.15s, color 0.15s;
+    background: linear-gradient(
+      180deg,
+      #ef4444,
+      #b91c1c,
+      #7f1d1d
+    );
+
+    border: 2px solid #111;
+    border-radius: 10px;
+
+    box-shadow:
+      0 6px 0 #111,
+      inset 0 1px 0 rgba(255, 255, 255, 0.35);
+
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+
+    transition: all 0.12s ease;
   }
 
-  .nav-links a:hover {
-    background: #f3f4f6;
-    color: #111;
+  .btn:hover {
+    transform: scale(1.05);
+    filter: brightness(1.1);
   }
 
-  /* ACTIVE TAB */
-  .nav-links a.active {
-    background: #e5e7eb;
-    color: #111;
-    font-weight: 600;
+  .btn:active {
+    transform: translateY(4px);
+    box-shadow:
+      0 2px 0 #111,
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+
+  @media (max-width: 600px) {
+    .btn {
+      top: 10px;
+      right: 10px;
+      font-size: 0.65rem;
+      padding: 0.6rem 0.9rem;
+    }
   }
 </style>

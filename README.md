@@ -207,6 +207,18 @@ Canvas Logica:
 - Vechten? :D
 - Muziek / SFX
 - Betere knoppen tijdens encounter
+- Catch animatie
+- Encounter animatie (?)
+
+### Meivakantie + Overige dagen
+Ik ben in de meivakantie nog bezig geweest met dit vak. Ik had de meeste dagen 1 ding toegevoegd/aangepast aan mijn prototype. Hieronder staat alles waar ik nog mee bezig be geweest.
+
+Ik heb swapfunctie toegevoegd. In de battle zie je naast de run en catch knoppen nu ook een swap knop. Hierbij komt een UI in beeld met alle pokemon die je hebt. Als je een kiest, swap je je pokemon.
+
+De header is nu niet meer een header maar een toggle knop in de hoek. Dit is een stuk meer immersief en past meer bij de vibe van een video game. Nu kan ik ook het canvas full screen maken zonder dat het er slecht uitziet. Verder heb ik de randomizer eruit gehaald. De pagina blijft wel bestaan als debugger maar hoort niet bij de ervaring.
+
+
+
 
 ## Bronnenlijst
 Video over Astro
