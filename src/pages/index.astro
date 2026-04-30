@@ -3,18 +3,11 @@ import { POKEMON_URL } from "./shared.js";
 import MainLayout from "../layouts/MainLayout.astro";
 import Card from "../components/Card.astro";
 
-type Pokemon = {
-  name: string;
-  url: string;
-  official_artwork?: string;
-  types?: string[];
-};
-
 const response = await fetch(POKEMON_URL);
 const data = await response.json();
 
-const pokemonList: Pokemon[] = await Promise.all(
-  data.results.map(async (poke: Pokemon) => {
+const pokemonList = await Promise.all(
+  (data.results as { name: string; url: string }[]).map(async (poke) => {
     try {
       const res = await fetch(poke.url);
       const details = await res.json();
@@ -23,13 +16,17 @@ const pokemonList: Pokemon[] = await Promise.all(
         name: poke.name,
         url: poke.url,
         official_artwork:
-          details.sprites.other["official-artwork"].front_default,
-        types: details.types.map((t: any) => t.type.name),
+          details?.sprites?.other?.["official-artwork"]?.front_default ?? null,
+        types:
+          details?.types?.map(
+            (t: { type: { name: string } }) => t.type.name
+          ) ?? ["normal"],
       };
     } catch {
       return {
         name: poke.name,
         url: poke.url,
+        official_artwork: null,
         types: ["normal"],
       };
     }
@@ -37,12 +34,12 @@ const pokemonList: Pokemon[] = await Promise.all(
 );
 ---
 
-<MainLayout title="Pokémon Index">
-  <div class="lab">
+<MainLayout title="Pokémon Collection">
+  <div class="page">
 
     <header class="header">
-      <h1>POKÉMON RESEARCH INDEX</h1>
-      <p>Biological classification archive</p>
+      <h1>POKÉMON COLLECTION</h1>
+      <p>Select a card</p>
     </header>
 
     <ul class="pokemon-grid">
@@ -55,27 +52,30 @@ const pokemonList: Pokemon[] = await Promise.all(
 </MainLayout>
 
 <style>
-  .lab {
-    min-height: 100vh;
-    padding: 2rem;
-    background: #f0f8ff;
-  }
+.page {
+  min-height: 100vh;
+  padding: 2rem 3rem;
+  background: #f0f8ff;
+}
 
-  .header {
-    margin-bottom: 2rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid #000000;
-  }
+.header {
+  width:80vw;
+  margin: 0 auto 2rem;
+  padding: 1rem;
+  background: linear-gradient(145deg, #ffe066, #f2c94c);
+  border: 2px solid #000;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+}
 
-  .header h1 {
-    font-size: 1.1rem;
-    letter-spacing: 2px;
-    margin: 0;
-  }
+.pokemon-grid {
+  list-style: none;
+  padding: 0;
 
-  .header p {
-    margin: 0.3rem 0 0;
-    font-size: 0.85rem;
-    color: #666;
-  }
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1.2rem;
+
+  max-width: 80vw;
+  margin: 0 auto;
+}
 </style>

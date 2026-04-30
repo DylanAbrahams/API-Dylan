@@ -22,19 +22,7 @@ h1 {
   margin-bottom: 1.5rem;
 }
 
-/* =========================
-   OVERVIEW GRID (FIXED)
-   -> alleen voor overzichtspagina
-========================= */
 
-.pokemon-grid {
-  list-style: none;
-  padding: 0;
-
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 1rem;
-}
 
 /* =========================
    WILD POKÉMON
@@ -101,7 +89,7 @@ h1 {
 
 /* Move type badge */
 .move-type {
-  min-width: 3rem;
+  min-width: 4rem;
   text-align: center;
 
   position: absolute;
@@ -199,7 +187,6 @@ h1 {
 /* =========================
    POKÉMON OVERLAY (GAME UI)
 ========================= */
-
 .pokemon-overlay {
   position: fixed;
   left: 20px;
@@ -218,12 +205,13 @@ h1 {
   gap: 8px;
 }
 
+/* ===== SLOT ===== */
 .pokemon-overlay li {
   width: 96px;
   height: 96px;
 
-  background: rgba(5, 5, 5, 0.95);
-  border: 2px solid rgba(255, 255, 255, 0.06);
+  background: rgba(5, 5, 5, 0.75); /* 👈 minder donker dan eerst */
+  border: 2px solid rgba(255, 255, 255, 0.18); /* 👈 duidelijkere border */
 
   display: flex;
   align-items: center;
@@ -232,16 +220,18 @@ h1 {
   position: relative;
 }
 
+/* inner frame detail */
 .pokemon-overlay li::before {
   content: "";
   position: absolute;
   inset: 4px;
 
-  border: 1px solid rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
 
   pointer-events: none;
 }
 
+/* ===== SPRITE ===== */
 .pokemon-overlay img {
   width: 88px;
   height: 88px;
@@ -250,7 +240,7 @@ h1 {
   image-rendering: pixelated;
 }
 
-/* DELETE BUTTON */
+/* ===== DELETE BUTTON ===== */
 .pokemon-overlay button {
   position: absolute;
   top: 5px;
@@ -269,11 +259,13 @@ h1 {
   pointer-events: none;
 }
 
+/* show on hover only */
 .pokemon-overlay li:hover button {
   opacity: 1;
   pointer-events: auto;
 }
 
+/* X icon */
 .pokemon-overlay button::after {
   content: "";
   position: absolute;
