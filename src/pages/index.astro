@@ -45,7 +45,7 @@ const pokemonList: Pokemon[] = await Promise.all(
       <p>Biological classification archive</p>
     </header>
 
-    <ul>
+    <ul class="pokemon-grid">
       {pokemonList.map((poke, index) => (
         <Card {...poke} id={index + 1} />
       ))}
@@ -64,7 +64,7 @@ const pokemonList: Pokemon[] = await Promise.all(
   .header {
     margin-bottom: 2rem;
     padding-bottom: 1rem;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid #000000;
   }
 
   .header h1 {

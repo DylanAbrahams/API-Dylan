@@ -12,9 +12,13 @@ export function addPokemon(pokemon) {
   const list = loadPokemon();
   list.push(pokemon);
   savePokemon(list);
+
+  window.dispatchEvent(new Event("pokemon-updated"));
 }
 
 export function removePokemon(name) {
-  const list = loadPokemon().filter(p => p.name !== name);
+  const list = loadPokemon().filter((p) => p.name !== name);
   savePokemon(list);
+
+  window.dispatchEvent(new Event("pokemon-updated"));
 }

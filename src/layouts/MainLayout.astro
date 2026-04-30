@@ -1,6 +1,6 @@
 ---
 import Header from "../components/Header.astro";
-import Footer from "../components/Footer.astro";
+import PokemonOverlay from "../components/PokemonOverlay.astro";
 const { title = "Pokémon Lijst" } = Astro.props;
 ---
 
@@ -10,8 +10,6 @@ const { title = "Pokémon Lijst" } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <link rel="stylesheet" href="/styles/global.css" />
-
-    
   </head>
 
   <body>
@@ -23,18 +21,17 @@ const { title = "Pokémon Lijst" } = Astro.props;
       <slot />
     </main>
 
-    <!-- Footer -->
-    <Footer />
+    <!-- Pokemon Overlay -->
+    <PokemonOverlay />
 
     <script type="module">
       import { loadPokemon, removePokemon } from "../game/pokemonStorage.js";
 
-      function renderFooter() {
+      function renderPokemonOverlay() {
         const el = document.querySelector("#my-pokemon-list");
         if (!el) return;
 
         const list = loadPokemon();
-
         el.innerHTML = "";
 
         list.forEach((p) => {
@@ -42,28 +39,29 @@ const { title = "Pokémon Lijst" } = Astro.props;
 
           const img = document.createElement("img");
           img.src = p.frontSprite;
-
-          const span = document.createElement("span");
-          span.textContent = p.name;
+          img.alt = p.name;
 
           const btn = document.createElement("button");
-          btn.textContent = "x";
+          btn.textContent = "✕";
 
-          btn.onclick = () => {
+          btn.onclick = (e) => {
+            e.stopPropagation();
             removePokemon(p.name);
-            renderFooter();
+            renderPokemonOverlay();
           };
 
-          li.append(img, span, btn);
+          li.appendChild(img);
+          li.appendChild(btn);
+
           el.appendChild(li);
         });
       }
 
-      // initial render
-      document.addEventListener("DOMContentLoaded", renderFooter);
+      // init
+      document.addEventListener("DOMContentLoaded", renderPokemonOverlay);
 
-      //  live updates
-      window.addEventListener("pokemon-updated", renderFooter);
+      // live updates
+      window.addEventListener("pokemon-updated", renderPokemonOverlay);
     </script>
   </body>
 </html>
