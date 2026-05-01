@@ -190,7 +190,7 @@ Verder heb ik deze week nog de site online gekregen op render. Ik moest wat ding
 
 Aantekeningen.
 Design:
-- Overzichtspagina moet beter
+- Overzichtspagina moet beter 
 - Navigatie moet beter of er helemaal uit
 - Randomizer hoeft niet in de navigatie  
 - Detailpagina achtergrond plaatje
@@ -217,6 +217,27 @@ Ik heb swapfunctie toegevoegd. In de battle zie je naast de run en catch knoppen
 
 De header is nu niet meer een header maar een toggle knop in de hoek. Dit is een stuk meer immersief en past meer bij de vibe van een video game. Nu kan ik ook het canvas full screen maken zonder dat het er slecht uitziet. Verder heb ik de randomizer eruit gehaald. De pagina blijft wel bestaan als debugger maar hoort niet bij de ervaring.
 
+Footer Veranderd naar een lijst aan de zijkant
+
+Canvas full screen maken (buttons schalen niet mee lol)
+
+
+
+Design:
+- Overzichtspagina moet beter (halverwege)
+- Detailpagina achtergrond plaatje
+- Detailpagina View transitiions 
+- Canvas groter maken
+
+Canvas Logica:
+- Verschillende pokemon in elk gras
+- Muren boven/onder
+- Starter Pokemon
+- Vechten? :D
+- Muziek / SFX
+- Betere knoppen tijdens encounter
+- Catch animatie
+- Encounter animatie (?)
 
 
 
