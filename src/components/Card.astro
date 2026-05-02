@@ -39,6 +39,11 @@ const primaryType = types?.[0] ?? "normal";
 .card-shell {
   display: block;
   text-decoration: none;
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: scale(1.05);
+  }
 }
 
 /* BASE CARD (zelfde stijl als detail, maar compact) */
