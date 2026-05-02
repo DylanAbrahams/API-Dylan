@@ -221,13 +221,13 @@ Footer Veranderd naar een lijst aan de zijkant
 
 Canvas full screen maken (buttons schalen niet mee lol)
 
+Buttons wat beter + Dialoog box
 
 
 Design:
 - Overzichtspagina moet beter (halverwege)
 - Detailpagina achtergrond plaatje
 - Detailpagina View transitiions 
-- Canvas groter maken
 
 Canvas Logica:
 - Verschillende pokemon in elk gras
