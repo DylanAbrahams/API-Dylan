@@ -125,24 +125,25 @@ const { width = 900, height = 500 } = Astro.props;
     }
   }
 
-  async function enrich(list) {
-    return await Promise.all(
-      list.map(async (p) => {
-        const d = await fetchJSON(p.url);
+async function enrich(list) {
+  return await Promise.all(
+    list.map(async (p) => {
+      const d = await fetchJSON(p.url);
 
-        return {
-          ...p,
-          id: d?.id,
-          stats: d?.stats || [],
-          frontSprite: d?.sprites?.front_default || "",
-          backSprite: d?.sprites?.back_default || "",
-        };
-      }),
-    );
-  }
+      return {
+        ...p,
+        id: d?.id,
+        stats: d?.stats || [],
+        types: d?.types?.map(t => t.type.name) || [],
+        frontSprite: d?.sprites?.front_default || "",
+        backSprite: d?.sprites?.back_default || "",
+      };
+    }),
+  );
+}
 
   async function loadPokedex() {
-    const res = await fetch("https://pokeapi.co/api/v2/pokemon?limit=493");
+    const res = await fetch("https://pokeapi.co/api/v2/pokemon?limit=151");
     const data = await res.json();
     enrichedList = await enrich(data.results);
   }
@@ -176,20 +177,34 @@ const { width = 900, height = 500 } = Astro.props;
     return list[0];
   }
 
-  function startEncounter() {
-    if (!enrichedList.length) return;
+  function startEncounter(zone) {
+  if (!enrichedList.length) return;
 
-    gameState = "encounter";
-    currentPokemon = weightedRandom(enrichedList, 50);
+  gameState = "encounter";
 
-    battleSprite = new Image();
-    battleSprite.src = currentPokemon.frontSprite;
+  let pool = enrichedList;
 
-    const playerMon = getPlayerPokemon();
-
-    backSprite = new Image();
-    backSprite.src = playerMon?.backSprite || playerMon?.frontSprite || "";
+  if (zone?.types?.length) {
+    pool = enrichedList.filter(p =>
+      p.types.some(t => zone.types.includes(t))
+    );
   }
+
+  // fallback als niks matcht
+  if (pool.length === 0) {
+    pool = enrichedList;
+  }
+
+  currentPokemon = pool[Math.floor(Math.random() * pool.length)];
+
+  battleSprite = new Image();
+  battleSprite.src = currentPokemon.frontSprite;
+
+  const playerMon = getPlayerPokemon();
+
+  backSprite = new Image();
+  backSprite.src = playerMon?.backSprite || playerMon?.frontSprite || "";
+}
 
 function endEncounter() {
   gameState = "world";
@@ -212,16 +227,16 @@ function endEncounter() {
     );
   }
 
-  function isInGrass(x, y) {
+  function getGrassZone(x, y) {
     const half = player.size / 2;
 
-    return grass.some(
-      (g) =>
-        x + half > g.x &&
-        x - half < g.x + g.w &&
-        y + half > g.y &&
-        y - half < g.y + g.h,
-    );
+    return grass.find(
+  (g) =>
+    x + half > g.x &&
+    x - half < g.x + g.w &&
+    y + half > g.y &&
+    y - half < g.y + g.h,
+);
   }
 
   /* -------------------- UPDATE -------------------- */
@@ -273,16 +288,22 @@ function endEncounter() {
 
     savePlayer();
 
-    if (player.moving && isInGrass(player.x, player.y)) {
-      encounterCooldown += dt;
+    const zone = getGrassZone(player.x, player.y);
 
-      if (encounterCooldown > ENCOUNTER_CHECK_RATE) {
-        encounterCooldown = 0;
-        if (Math.random() < ENCOUNTER_CHANCE) startEncounter();
-      }
-    } else {
-      encounterCooldown = 0;
+if (player.moving && zone) {
+  encounterCooldown += dt;
+
+  if (encounterCooldown > ENCOUNTER_CHECK_RATE) {
+    encounterCooldown = 0;
+
+    if (Math.random() < ENCOUNTER_CHANCE) {
+      console.log(getGrassZone(player.x, player.y));
+      startEncounter(zone);
     }
+  }
+} else {
+  encounterCooldown = 0;
+}
 
     if (messageTimer > 0) {
       messageTimer -= dt;
