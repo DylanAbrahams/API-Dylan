@@ -28,7 +28,7 @@ const { width = 900, height = 500 } = Astro.props;
   import { addPokemon, loadPokemon } from "../game/pokemonStorage.js";
 
   /* -------------------- CONFIG -------------------- */
-  const ENCOUNTER_CHANCE = 0.1;
+  const ENCOUNTER_CHANCE = 0.2;
   const ENCOUNTER_CHECK_RATE = 0.25;
 
   /* -------------------- CANVAS -------------------- */
@@ -68,6 +68,9 @@ const { width = 900, height = 500 } = Astro.props;
   const playerImg = new Image();
   playerImg.src = "/assets/Trainer_Spritesheet.png";
 
+  const pokeballImg = new Image();
+  pokeballImg.src = "/assets/pokeball.png";
+
   const viewW = canvas.width;
   const viewH = canvas.height;
 
@@ -82,6 +85,14 @@ const { width = 900, height = 500 } = Astro.props;
   let messageQueue = [];
   let messageTimer = 0;
   let uiMode = "menu"; // "menu" | "message"
+
+  let catchAnimation = {
+    active: false,
+    phase: "idle", // "shrink" | "shake" | "done"
+    timer: 0,
+    shakes: 0,
+    success: false,
+  };
 
   /* -------------------- UI -------------------- */
   let partyOpen = false;
@@ -125,22 +136,22 @@ const { width = 900, height = 500 } = Astro.props;
     }
   }
 
-async function enrich(list) {
-  return await Promise.all(
-    list.map(async (p) => {
-      const d = await fetchJSON(p.url);
+  async function enrich(list) {
+    return await Promise.all(
+      list.map(async (p) => {
+        const d = await fetchJSON(p.url);
 
-      return {
-        ...p,
-        id: d?.id,
-        stats: d?.stats || [],
-        types: d?.types?.map(t => t.type.name) || [],
-        frontSprite: d?.sprites?.front_default || "",
-        backSprite: d?.sprites?.back_default || "",
-      };
-    }),
-  );
-}
+        return {
+          ...p,
+          id: d?.id,
+          stats: d?.stats || [],
+          types: d?.types?.map((t) => t.type.name) || [],
+          frontSprite: d?.sprites?.front_default || "",
+          backSprite: d?.sprites?.back_default || "",
+        };
+      }),
+    );
+  }
 
   async function loadPokedex() {
     const res = await fetch("https://pokeapi.co/api/v2/pokemon?limit=151");
@@ -178,41 +189,41 @@ async function enrich(list) {
   }
 
   function startEncounter(zone) {
-  if (!enrichedList.length) return;
+    if (!enrichedList.length) return;
 
-  gameState = "encounter";
+    gameState = "encounter";
 
-  let pool = enrichedList;
+    let pool = enrichedList;
 
-  if (zone?.types?.length) {
-    pool = enrichedList.filter(p =>
-      p.types.some(t => zone.types.includes(t))
-    );
+    if (zone?.types?.length) {
+      pool = enrichedList.filter((p) =>
+        p.types.some((t) => zone.types.includes(t)),
+      );
+    }
+
+    // fallback als niks matcht
+    if (pool.length === 0) {
+      pool = enrichedList;
+    }
+
+    currentPokemon = pool[Math.floor(Math.random() * pool.length)];
+
+    battleSprite = new Image();
+    battleSprite.src = currentPokemon.frontSprite;
+
+    const playerMon = getPlayerPokemon();
+
+    backSprite = new Image();
+    backSprite.src = playerMon?.backSprite || playerMon?.frontSprite || "";
   }
 
-  // fallback als niks matcht
-  if (pool.length === 0) {
-    pool = enrichedList;
+  function endEncounter() {
+    gameState = "world";
+    uiMode = "menu";
+    battleMessage = "";
+    messageQueue = [];
+    currentPokemon = null;
   }
-
-  currentPokemon = pool[Math.floor(Math.random() * pool.length)];
-
-  battleSprite = new Image();
-  battleSprite.src = currentPokemon.frontSprite;
-
-  const playerMon = getPlayerPokemon();
-
-  backSprite = new Image();
-  backSprite.src = playerMon?.backSprite || playerMon?.frontSprite || "";
-}
-
-function endEncounter() {
-  gameState = "world";
-  uiMode = "menu";
-  battleMessage = "";
-  messageQueue = [];
-  currentPokemon = null;
-}
 
   /* -------------------- COLLISION -------------------- */
   function isColliding(x, y) {
@@ -231,20 +242,93 @@ function endEncounter() {
     const half = player.size / 2;
 
     return grass.find(
-  (g) =>
-    x + half > g.x &&
-    x - half < g.x + g.w &&
-    y + half > g.y &&
-    y - half < g.y + g.h,
-);
+      (g) =>
+        x + half > g.x &&
+        x - half < g.x + g.w &&
+        y + half > g.y &&
+        y - half < g.y + g.h,
+    );
   }
 
-  /* -------------------- UPDATE -------------------- */
+  /* -------------------- CATCH -------------------- */
   let encounterCooldown = 0;
 
+  function updateCatchAnimation(dt) {
+  catchAnimation.timer += dt;
+
+  /* -------------------- SHRINK -------------------- */
+  if (catchAnimation.phase === "shrink") {
+    if (catchAnimation.timer > 0.5) {
+      catchAnimation.phase = "shake";
+      catchAnimation.timer = 0;
+    }
+  }
+
+  /* -------------------- SHAKE -------------------- */
+  if (catchAnimation.phase === "shake") {
+    const SHAKE_DURATION = 1.0;
+    const MAX_SHAKES = 3;
+
+    const shakeIndex = Math.floor(catchAnimation.timer / SHAKE_DURATION);
+
+    if (shakeIndex >= MAX_SHAKES) {
+      catchAnimation.phase = "done";
+      catchAnimation.timer = 0;
+    }
+  }
+
+  /* -------------------- DONE -------------------- */
+  if (catchAnimation.phase === "done") {
+  if (catchAnimation.timer > 0.6) {
+
+    if (catchAnimation.success) {
+
+      if (catchAnimation.successHandled) return;
+      catchAnimation.successHandled = true;
+
+      addPokemon({
+        name: currentPokemon.name,
+        frontSprite: currentPokemon.frontSprite,
+        backSprite: currentPokemon.backSprite,
+      });
+
+      window.dispatchEvent(new Event("pokemon-updated"));
+
+      showMessage(`POKÉMON WAS CAUGHT!`);
+      showMessage("It was added to your party!");
+
+      setTimeout(() => {
+        catchAnimation.active = false; // 👈 hier pas
+        endEncounter();
+      }, 1200);
+
+    } else {
+      showMessage("Oh no! It broke free!");
+      uiMode = "message";
+
+      catchAnimation.phase = "idle";
+      catchAnimation.timer = 0;
+      catchAnimation.shakes = 0;
+
+      catchAnimation.active = false;
+    }
+  }
+}
+}
+
+  /* ================= UPDATE =========================== */
+
   function update(dt) {
+    /* -------------------- CATCH STATE -------------------- */
+    if (catchAnimation.active) {
+      updateCatchAnimation(dt);
+      return;
+    }
+
+    /* -------------------- WORLD ONLY -------------------- */
     if (gameState !== "world") return;
 
+    /* -------------------- INPUT -------------------- */
     let nextX = player.x;
     let nextY = player.y;
 
@@ -274,6 +358,7 @@ function endEncounter() {
 
     player.moving = dx !== 0 || dy !== 0;
 
+    /* -------------------- MOVEMENT -------------------- */
     if (player.moving) {
       const len = Math.hypot(dx, dy);
       dx /= len;
@@ -283,37 +368,40 @@ function endEncounter() {
       nextY += dy * speed;
     }
 
+    /* -------------------- COLLISION -------------------- */
     if (!isColliding(nextX, player.y)) player.x = nextX;
     if (!isColliding(player.x, nextY)) player.y = nextY;
 
     savePlayer();
 
+    /* -------------------- GRASS ENCOUNTER -------------------- */
     const zone = getGrassZone(player.x, player.y);
 
-if (player.moving && zone) {
-  encounterCooldown += dt;
+    if (player.moving && zone) {
+      encounterCooldown += dt;
 
-  if (encounterCooldown > ENCOUNTER_CHECK_RATE) {
-    encounterCooldown = 0;
+      if (encounterCooldown > ENCOUNTER_CHECK_RATE) {
+        encounterCooldown = 0;
 
-    if (Math.random() < ENCOUNTER_CHANCE) {
-      console.log(getGrassZone(player.x, player.y));
-      startEncounter(zone);
+        if (Math.random() < ENCOUNTER_CHANCE) {
+          startEncounter(zone);
+        }
+      }
+    } else {
+      encounterCooldown = 0;
     }
-  }
-} else {
-  encounterCooldown = 0;
-}
 
+    /* -------------------- MESSAGE TIMER -------------------- */
     if (messageTimer > 0) {
       messageTimer -= dt;
+
       if (messageTimer <= 0) {
         battleMessage = "";
       }
     }
   }
 
-  /* -------------------- ANIMATION -------------------- */
+  /* -------------------- LOOP ANIMATIE -------------------- */
   let frameTimer = 0;
 
   function updateAnimation(dt) {
@@ -328,138 +416,160 @@ if (player.moving && zone) {
     }
   }
 
-  /* -------------------- DRAW -------------------- */
+
+
+
+
+
+
+
+  /* -------------------- ALLE DRAW FUNCTIES -------------------- */
   function draw() {
     ctx.clearRect(0, 0, viewW, viewH);
 
-    let camX = player.x - viewW / 2;
-    let camY = player.y - viewH / 2;
+    drawWorld();
+    drawEncounter();
+    drawParty();
 
-    camX = Math.max(0, Math.min(camX, img.width - viewW));
-    camY = Math.max(0, Math.min(camY, img.height - viewH));
+  }
 
-    if (gameState === "world") {
-      ctx.drawImage(img, camX, camY, viewW, viewH, 0, 0, viewW, viewH);
+  /* -------------------- WORLD -------------------- */
+  function drawWorld() {
+    if (gameState !== "world") return;
 
-      const sx = player.x - camX;
-      const sy = player.y - camY;
+    const cam = getCamera();
 
-      ctx.drawImage(
-        playerImg,
-        player.frame * 64,
-        player.direction * 64,
-        64,
-        64,
-        sx - 32,
-        sy - 32,
-        64,
-        64,
-      );
-    }
+    ctx.drawImage(img, cam.x, cam.y, viewW, viewH, 0, 0, viewW, viewH);
 
-    if (gameState === "encounter" && currentPokemon) {
-      ctx.drawImage(battleBg, 0, 0, viewW, viewH);
+    const sx = player.x - cam.x;
+    const sy = player.y - cam.y;
 
-      const name = currentPokemon.name.toUpperCase();
+    ctx.drawImage(
+      playerImg,
+      player.frame * 64,
+      player.direction * 64,
+      64,
+      64,
+      sx - 32,
+      sy - 32,
+      64,
+      64,
+    );
+  }
 
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
+  function getCamera() {
+    let x = player.x - viewW / 2;
+    let y = player.y - viewH / 2;
 
-      ctx.fillStyle = "rgba(0,0,0,0.6)";
-      ctx.fillRect(20, 20, 260, 50);
+    x = Math.max(0, Math.min(x, img.width - viewW));
+    y = Math.max(0, Math.min(y, img.height - viewH));
 
-      ctx.fillStyle = "#fff";
-      ctx.font = "bold 20px Arial";
-      ctx.fillText(name, 150, 45);
+    return { x, y };
+  }
 
-      ctx.textAlign = "left";
-      ctx.textBaseline = "alphabetic";
+  /* -------------------- PARTY -------------------- */
+  function drawParty() {
+    if (!partyOpen) return;
 
-      if (battleSprite.complete) {
-        const scale = 3;
-        const w = battleSprite.naturalWidth * scale;
-        const h = battleSprite.naturalHeight * scale;
-        ctx.drawImage(
-          battleSprite,
-          viewW * 0.72 - w / 2,
-          viewH * 0.75 - h,
-          w,
-          h,
-        );
-      }
+    const team = loadPokemon();
 
-      if (backSprite.complete) {
-        const scale = 4.5;
-        const w = backSprite.naturalWidth * scale;
-        const h = backSprite.naturalHeight * scale;
-        ctx.drawImage(backSprite, viewW * 0.25 - w / 2, viewH - h + 160, w, h);
-      }
+    ctx.fillStyle = "rgba(0,0,0,0.75)";
+    ctx.fillRect(0, 0, viewW, viewH);
 
-      if (uiMode === "menu") {
-        drawButton("Catch", viewW - 140, viewH - 80);
-        drawButton("Run", viewW - 140, viewH - 40);
-        drawButton("Swap", viewW - 140, viewH - 120);
-      }
-    }
+    ctx.fillStyle = "#fff";
+    ctx.textAlign = "center";
+    ctx.font = "bold 22px Arial";
+    ctx.fillText("Select Pokémon", viewW / 2, 80);
 
-    if (partyOpen) {
-      const team = loadPokemon();
+    const boxSize = 90;
+    const startX = (viewW - team.length * (boxSize + 10)) / 2;
+    const startY = viewH / 2 - 40;
 
-      ctx.fillStyle = "rgba(0,0,0,0.75)";
-      ctx.fillRect(0, 0, viewW, viewH);
+    for (let i = 0; i < team.length; i++) {
+      const mon = team[i];
+      const x0 = startX + i * (boxSize + 10);
 
-      ctx.fillStyle = "#fff";
-      ctx.textAlign = "center";
-      ctx.font = "bold 22px Arial";
-      ctx.fillText("Select Pokémon", viewW / 2, 80);
+      ctx.fillStyle = "#222";
+      ctx.fillRect(x0, startY, boxSize, boxSize);
 
-      const boxSize = 90;
-      const startX = (viewW - team.length * (boxSize + 10)) / 2;
-      const startY = viewH / 2 - 40;
+      ctx.strokeStyle = "#fff";
+      ctx.strokeRect(x0, startY, boxSize, boxSize);
 
-      for (let i = 0; i < team.length; i++) {
-        const mon = team[i];
-        const x0 = startX + i * (boxSize + 10);
-
-        ctx.fillStyle = "#222";
-        ctx.fillRect(x0, startY, boxSize, boxSize);
-
-        ctx.strokeStyle = "#fff";
-        ctx.strokeRect(x0, startY, boxSize, boxSize);
-
-        if (mon.frontSprite) {
-          if (!spriteCache[mon.frontSprite]) {
-            spriteCache[mon.frontSprite] = new Image();
-            spriteCache[mon.frontSprite].src = mon.frontSprite;
-          }
-
-          const img = spriteCache[mon.frontSprite];
-
-          if (img.complete) {
-            ctx.drawImage(img, x0 + 13, startY + 13, 64, 64);
-          }
+      if (mon.frontSprite) {
+        if (!spriteCache[mon.frontSprite]) {
+          spriteCache[mon.frontSprite] = new Image();
+          spriteCache[mon.frontSprite].src = mon.frontSprite;
         }
 
-        ctx.fillStyle = "#fff";
-        ctx.textAlign = "center";
-        ctx.font = "12px Arial";
-        ctx.fillText(mon.name, x0 + boxSize / 2, startY + boxSize + 15);
-      }
-    }
+        const img = spriteCache[mon.frontSprite];
 
-    /* 👉 HIER MESSAGE UI */
-    if (uiMode === "message") {
-      ctx.fillStyle = "#000";
-      ctx.fillRect(20, viewH - 100, viewW - 40, 80);
+        if (img.complete) {
+          ctx.drawImage(img, x0 + 13, startY + 13, 64, 64);
+        }
+      }
 
       ctx.fillStyle = "#fff";
-      ctx.fillRect(25, viewH - 95, viewW - 50, 70);
-
-      ctx.fillStyle = "#000";
-      ctx.font = "16px Arial";
-      ctx.textAlign = "left";
-      ctx.fillText(battleMessage, 40, viewH - 55);
+      ctx.font = "12px Arial";
+      ctx.fillText(mon.name, x0 + boxSize / 2, startY + boxSize + 15);
     }
+  }
+
+  /* -------------------- ENCOUNTER -------------------- */
+  function drawEncounter() {
+    if (gameState !== "encounter" || !currentPokemon) return;
+
+    ctx.drawImage(battleBg, 0, 0, viewW, viewH);
+
+    drawBattleUI();
+    drawSprites();
+    drawButtons();
+    drawPokeball();
+    drawMessageBox();
+  }
+
+  /* -------------------- ALLE ENCOUNTER SUBFUNCTIES -------------------- */
+
+  function drawBattleUI() {
+    const name = currentPokemon.name.toUpperCase();
+
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    ctx.fillStyle = "rgba(0,0,0,0.6)";
+    ctx.fillRect(20, 20, 260, 50);
+
+    ctx.fillStyle = "#fff";
+    ctx.font = "bold 20px Arial";
+    ctx.fillText(name, 150, 45);
+
+    ctx.textAlign = "left";
+    ctx.textBaseline = "alphabetic";
+  }
+
+  function drawSprites() {
+    if (!catchAnimation.active && battleSprite.complete) {
+      const scale = 3;
+      const w = battleSprite.naturalWidth * scale;
+      const h = battleSprite.naturalHeight * scale;
+
+      ctx.drawImage(battleSprite, viewW * 0.72 - w / 2, viewH * 0.75 - h, w, h);
+    }
+
+    if (backSprite.complete) {
+      const scale = 4.5;
+      const w = backSprite.naturalWidth * scale;
+      const h = backSprite.naturalHeight * scale;
+
+      ctx.drawImage(backSprite, viewW * 0.25 - w / 2, viewH - h + 160, w, h);
+    }
+  }
+
+  function drawButtons() {
+    if (uiMode !== "menu") return;
+
+    drawButton("Catch", viewW - 140, viewH - 80);
+    drawButton("Run", viewW - 140, viewH - 40);
+    drawButton("Swap", viewW - 140, viewH - 120);
   }
 
   function drawButton(text, x, y, selected = false) {
@@ -482,7 +592,77 @@ if (player.moving && zone) {
     ctx.fillText(text, x + 10, y + 20);
   }
 
-  /* -------------------- CLICK FIX (BELANGRIJK) -------------------- */
+  function drawPokeball() {
+    if (!catchAnimation.active || !pokeballImg.complete) return;
+
+    const t = catchAnimation.timer;
+
+    const centerX = viewW * 0.72;
+    const centerY = viewH * 0.55;
+
+    let rotation = 0;
+    let baseScale = 1;
+
+    /* -------------------- SHRINK -------------------- */
+    if (catchAnimation.phase === "shrink") {
+      const p = Math.min(t / 0.5, 1);
+      baseScale = 3 - 2 * p;
+    } else if (catchAnimation.phase === "shake") {
+      /* -------------------- SHAKE -------------------- */
+      baseScale = 1;
+
+      const shakeDuration = 0.9;
+      const total = catchAnimation.timer;
+
+      const shakeIndex = Math.floor(total / shakeDuration);
+      const tShake = (total % shakeDuration) / shakeDuration;
+
+      const isShaking = tShake < 0.3;
+
+      if (shakeIndex < 3 && isShaking) {
+        const intensity = 0.22 * (1 - shakeIndex * 0.15);
+        rotation = Math.sin(tShake * Math.PI * 10) * intensity;
+      }
+    } else if (catchAnimation.phase === "done") {
+      /* -------------------- DONE -------------------- */
+      baseScale = 1;
+      rotation = 0;
+    }
+
+    const size = 36;
+
+    ctx.save();
+    ctx.translate(centerX, centerY + size / 2);
+    ctx.rotate(rotation);
+    ctx.scale(baseScale, baseScale);
+
+    if (catchAnimation.phase === "done" && catchAnimation.success) {
+      ctx.filter = "brightness(0.5)";
+    }
+
+    ctx.drawImage(pokeballImg, -size / 2, -size, size, size);
+
+    ctx.restore();
+
+    ctx.globalAlpha = 1;
+    ctx.filter = "none";
+  }
+
+  function drawMessageBox() {
+    if (uiMode !== "message") return;
+
+    ctx.fillStyle = "#000";
+    ctx.fillRect(20, viewH - 100, viewW - 40, 80);
+
+    ctx.fillStyle = "#fff";
+    ctx.fillRect(25, viewH - 95, viewW - 50, 70);
+
+    ctx.fillStyle = "#000";
+    ctx.font = "16px Arial";
+    ctx.fillText(battleMessage, 40, viewH - 55);
+  }
+
+  /* -------------------- CLICK FIX -------------------- */
   canvas.addEventListener("click", async (e) => {
     if (gameState === "encounter" && uiMode === "message") {
       nextMessage();
@@ -493,7 +673,7 @@ if (player.moving && zone) {
     const x = (e.clientX - rect.left) / scale;
     const y = (e.clientY - rect.top) / scale;
 
-    /* ✅ SWAP UI CLICK FIX */
+    // De swap knop
     if (partyOpen) {
       const team = loadPokemon();
       const boxSize = 90;
@@ -526,15 +706,11 @@ if (player.moving && zone) {
 
     if (gameState !== "encounter") return;
 
-    if (
-      x > viewW - 140 &&
-      x < viewW - 40 &&
-      y > viewH - 120 &&
-      y < viewH - 90
-    ) {
+    if (x > viewW - 140 && x < viewW - 40 && y > viewH - 120 && y < viewH - 90) {
       partyOpen = true;
     }
 
+    // De catch knop
     if (x > viewW - 140 && x < viewW - 40 && y > viewH - 80 && y < viewH - 50) {
       const rateRes = await fetchJSON(
         `https://pokeapi.co/api/v2/pokemon-species/${currentPokemon.id}`,
@@ -549,26 +725,18 @@ if (player.moving && zone) {
         return;
       }
 
-      if (Math.random() < rate / 255) {
-        addPokemon({
-          name: currentPokemon.name,
-          frontSprite: currentPokemon.frontSprite,
-          backSprite: currentPokemon.backSprite,
-        });
+      const success = Math.random() < rate / 255;
 
-        window.dispatchEvent(new Event("pokemon-updated"));
-
-        showMessage(`${currentPokemon.name.toUpperCase()} was caught!`);
-        showMessage("It was added to your party!");
-
-        setTimeout(() => {
-          endEncounter();
-        }, 1200);
-      } else {
-        showMessage("Oh no! It broke free!");
-      }
+      catchAnimation = {
+        active: true,
+        phase: "shrink",
+        timer: 0,
+        shakes: 0,
+        success,
+      };
     }
 
+    // Run knop
     if (x > viewW - 140 && x < viewW - 40 && y > viewH - 40 && y < viewH - 10) {
       endEncounter();
     }

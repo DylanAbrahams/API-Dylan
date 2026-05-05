@@ -225,12 +225,10 @@ Buttons wat beter + Dialoog box
 
 
 Design:
-- Overzichtspagina moet beter (halverwege)
 - Detailpagina achtergrond plaatje
 - Detailpagina View transitiions 
 
 Canvas Logica:
-- Verschillende pokemon in elk gras
 - Muren boven/onder
 - Starter Pokemon
 - Vechten? :D
@@ -270,6 +268,9 @@ Link: https://www.youtube.com/watch?v=Bq5GVrXO6jE&t=579s
 Battle Achtergrond
 Link PNG: https://i.imgur.com/lhu26US.png
 Link Post: https://www.pokecommunity.com/threads/inserting-battle-backgrounds.302401/ 
+
+Pokeball Sprite
+Link: https://www.pngegg.com/en/png-incia
 
 
 
