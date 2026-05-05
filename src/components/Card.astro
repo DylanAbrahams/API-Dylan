@@ -40,13 +40,14 @@ const primaryType = types?.[0] ?? "normal";
   display: block;
   text-decoration: none;
   transition: transform 0.2s ease;
+  border-radius:10px;
 
   &:hover {
     transform: scale(1.05);
   }
 }
 
-/* BASE CARD (zelfde stijl als detail, maar compact) */
+/* BASE CARD*/
 .card-face {
   padding: 12px;
   font-family: Arial, sans-serif;
@@ -59,7 +60,7 @@ const primaryType = types?.[0] ?? "normal";
     inset 0 0 0 2px rgba(255,255,255,0.25);
 }
 
-/* ===== TYPE COLORS (IDENTIEK AAN DETAIL) ===== */
+/* ===== TYPE COLORS ===== */
 
 .type-normal { background: linear-gradient(#f5f5f5, #e0e0e0); }
 .type-fire { background: linear-gradient(#fff3e0, #ffe0b2); }

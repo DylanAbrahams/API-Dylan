@@ -223,6 +223,7 @@ Canvas full screen maken (buttons schalen niet mee lol)
 
 Buttons wat beter + Dialoog box
 
+Catch animatie
 
 Design:
 - Detailpagina achtergrond plaatje
@@ -230,11 +231,9 @@ Design:
 
 Canvas Logica:
 - Muren boven/onder
-- Starter Pokemon
-- Vechten? :D
+- Starter Pokemond
 - Muziek / SFX
 - Betere knoppen tijdens encounter
-- Catch animatie
 - Encounter animatie (?)
 
 
