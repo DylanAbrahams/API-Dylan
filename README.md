@@ -217,13 +217,15 @@ Ik heb swapfunctie toegevoegd. In de battle zie je naast de run en catch knoppen
 
 De header is nu niet meer een header maar een toggle knop in de hoek. Dit is een stuk meer immersief en past meer bij de vibe van een video game. Nu kan ik ook het canvas full screen maken zonder dat het er slecht uitziet. Verder heb ik de randomizer eruit gehaald. De pagina blijft wel bestaan als debugger maar hoort niet bij de ervaring.
 
-Footer Veranderd naar een lijst aan de zijkant
+Ik heb de footer omgezet naar een lijst aan de zijkant. Dit ziet er al wat beter uit. Je ziet al je pokemon links van je scherm. 
 
 Canvas full screen maken (buttons schalen niet mee lol)
 
 Buttons wat beter + Dialoog box
 
 Catch animatie
+
+
 
 Design:
 - Detailpagina achtergrond plaatje
@@ -271,14 +273,29 @@ Link Post: https://www.pokecommunity.com/threads/inserting-battle-backgrounds.30
 Pokeball Sprite
 Link: https://www.pngegg.com/en/png-incia
 
+Pokemon D/P OST - Routes 201 & 202 (Day)
+YT Link: https://www.youtube.com/watch?v=4VIx96wGoRc
 
+Pokemon D/P OST - Battle! (Wild Pokemon)
+YT Link: https://www.youtube.com/watch?v=O35J-aNajG4
 
+Plink Sound Effect
+Link: https://www.myinstants.com/nl/instant/pokemon-plink-50024/?utm_source=copy&utm_medium=share
 
+Caught a pokemon
+Link: https://www.myinstants.com/nl/instant/caught-a-pokemon/
 
+Pokeball Poof (Gen 3)
+Link: https://soundeffects.fandom.com/wiki/Pok%C3%A9_Ball_Poof
 
+Pokeball Throw (Gen 3-present)
+Link: https://soundeffects.fandom.com/wiki/Pok%C3%A9_Ball_Throw
 
-
-
+Pokemon Fire Red Sound Effects
+0011 - Run
+0017 - Shake
+0024 - Caught
+Link: https://sounds.spriters-resource.com/game_boy_advance/pokemonfireredleafgreen/asset/397732/
 
 
 

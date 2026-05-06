@@ -74,6 +74,42 @@ const { width = 900, height = 500 } = Astro.props;
   const viewW = canvas.width;
   const viewH = canvas.height;
 
+  /* ================= AUDIO ================= */
+  // SFX
+  const sounds = {
+    button: new Audio("/assets/audio/sfx_button.m4a"),
+
+    throw: new Audio("/assets/audio/sfx_throw.wav"),
+    shake: new Audio("/assets/audio/sfx_shake.wav"),
+    breakfree: new Audio("/assets/audio/sfx_brokefree.wav"),
+    caught: new Audio("/assets/audio/sfx_caught.wav"),
+    run: new Audio("/assets/audio/sfx_run.wav"),
+  };
+
+  Object.values(sounds).forEach((s) => {
+    s.volume = 0.6;
+    s.load();
+  });
+
+  function playSound(sound) {
+    const s = sound.cloneNode();
+    s.volume = sound.volume;
+    s.play();
+  }
+
+  // Muziek
+
+  const worldMusic = new Audio("/assets/audio/route.mp3");
+  const battleMusic = new Audio("/assets/audio/battle.mp3");
+
+  worldMusic.loop = true;
+  battleMusic.loop = true;
+
+  worldMusic.volume = 0.2;
+  battleMusic.volume = 0.2;
+
+  let musicStarted = false;
+
   /* -------------------- STATE -------------------- */
   let lastTime = 0;
   let gameState = "world";
@@ -88,11 +124,19 @@ const { width = 900, height = 500 } = Astro.props;
 
   let catchAnimation = {
     active: false,
-    phase: "idle", // "shrink" | "shake" | "done"
+    phase: "idle",
     timer: 0,
     shakes: 0,
     success: false,
+    caughtSoundPlayed: false,
   };
+
+  window.addEventListener("click", () => {
+    if (!musicStarted) {
+      worldMusic.play();
+      musicStarted = true;
+    }
+  });
 
   /* -------------------- UI -------------------- */
   let partyOpen = false;
@@ -193,6 +237,10 @@ const { width = 900, height = 500 } = Astro.props;
 
     gameState = "encounter";
 
+    worldMusic.pause();
+    battleMusic.currentTime = 0;
+    battleMusic.play();
+
     let pool = enrichedList;
 
     if (zone?.types?.length) {
@@ -201,7 +249,6 @@ const { width = 900, height = 500 } = Astro.props;
       );
     }
 
-    // fallback als niks matcht
     if (pool.length === 0) {
       pool = enrichedList;
     }
@@ -219,6 +266,11 @@ const { width = 900, height = 500 } = Astro.props;
 
   function endEncounter() {
     gameState = "world";
+
+    battleMusic.pause();
+    worldMusic.play();
+    catchAnimation.caughtSoundPlayed = false;
+
     uiMode = "menu";
     battleMessage = "";
     messageQueue = [];
@@ -254,67 +306,82 @@ const { width = 900, height = 500 } = Astro.props;
   let encounterCooldown = 0;
 
   function updateCatchAnimation(dt) {
-  catchAnimation.timer += dt;
+    catchAnimation.timer += dt;
 
-  /* -------------------- SHRINK -------------------- */
-  if (catchAnimation.phase === "shrink") {
-    if (catchAnimation.timer > 0.5) {
-      catchAnimation.phase = "shake";
-      catchAnimation.timer = 0;
+    /* -------------------- SHRINK -------------------- */
+    if (catchAnimation.phase === "shrink") {
+      if (catchAnimation.timer > 0.5) {
+        catchAnimation.phase = "shake";
+        catchAnimation.timer = 0;
+      }
+    }
+
+    /* -------------------- SHAKE -------------------- */
+    if (catchAnimation.phase === "shake") {
+      const SHAKE_DURATION = 1.0;
+      const MAX_SHAKES = 3;
+
+      const shakeIndex = Math.floor(catchAnimation.timer / SHAKE_DURATION);
+
+      if (catchAnimation.lastShakeIndex === undefined) {
+        catchAnimation.lastShakeIndex = -1;
+      }
+
+      if (shakeIndex !== catchAnimation.lastShakeIndex) {
+        catchAnimation.lastShakeIndex = shakeIndex;
+
+        if (shakeIndex < MAX_SHAKES) {
+          playSound(sounds.shake);
+        }
+      }
+
+      if (shakeIndex >= MAX_SHAKES) {
+        catchAnimation.phase = "done";
+        catchAnimation.timer = 0;
+
+        if (catchAnimation.success && !catchAnimation.caughtSoundPlayed) {
+          playSound(sounds.caught);
+          catchAnimation.caughtSoundPlayed = true;
+        }
+      }
+    }
+
+    /* -------------------- DONE -------------------- */
+    if (catchAnimation.phase === "done") {
+      if (catchAnimation.timer > 0.6) {
+        if (catchAnimation.success) {
+          if (catchAnimation.successHandled) return;
+          catchAnimation.successHandled = true;
+
+          addPokemon({
+            name: currentPokemon.name,
+            frontSprite: currentPokemon.frontSprite,
+            backSprite: currentPokemon.backSprite,
+          });
+
+          window.dispatchEvent(new Event("pokemon-updated"));
+
+          showMessage(`POKÉMON WAS CAUGHT!`);
+          showMessage("It was added to your party!");
+
+          setTimeout(() => {
+            catchAnimation.active = false;
+            endEncounter();
+          }, 1200);
+        } else {
+          playSound(sounds.breakfree);
+          showMessage("Oh no! It broke free!");
+          uiMode = "message";
+
+          catchAnimation.phase = "idle";
+          catchAnimation.timer = 0;
+          catchAnimation.shakes = 0;
+
+          catchAnimation.active = false;
+        }
+      }
     }
   }
-
-  /* -------------------- SHAKE -------------------- */
-  if (catchAnimation.phase === "shake") {
-    const SHAKE_DURATION = 1.0;
-    const MAX_SHAKES = 3;
-
-    const shakeIndex = Math.floor(catchAnimation.timer / SHAKE_DURATION);
-
-    if (shakeIndex >= MAX_SHAKES) {
-      catchAnimation.phase = "done";
-      catchAnimation.timer = 0;
-    }
-  }
-
-  /* -------------------- DONE -------------------- */
-  if (catchAnimation.phase === "done") {
-  if (catchAnimation.timer > 0.6) {
-
-    if (catchAnimation.success) {
-
-      if (catchAnimation.successHandled) return;
-      catchAnimation.successHandled = true;
-
-      addPokemon({
-        name: currentPokemon.name,
-        frontSprite: currentPokemon.frontSprite,
-        backSprite: currentPokemon.backSprite,
-      });
-
-      window.dispatchEvent(new Event("pokemon-updated"));
-
-      showMessage(`POKÉMON WAS CAUGHT!`);
-      showMessage("It was added to your party!");
-
-      setTimeout(() => {
-        catchAnimation.active = false; // 👈 hier pas
-        endEncounter();
-      }, 1200);
-
-    } else {
-      showMessage("Oh no! It broke free!");
-      uiMode = "message";
-
-      catchAnimation.phase = "idle";
-      catchAnimation.timer = 0;
-      catchAnimation.shakes = 0;
-
-      catchAnimation.active = false;
-    }
-  }
-}
-}
 
   /* ================= UPDATE =========================== */
 
@@ -416,13 +483,6 @@ const { width = 900, height = 500 } = Astro.props;
     }
   }
 
-
-
-
-
-
-
-
   /* -------------------- ALLE DRAW FUNCTIES -------------------- */
   function draw() {
     ctx.clearRect(0, 0, viewW, viewH);
@@ -430,7 +490,6 @@ const { width = 900, height = 500 } = Astro.props;
     drawWorld();
     drawEncounter();
     drawParty();
-
   }
 
   /* -------------------- WORLD -------------------- */
@@ -510,7 +569,11 @@ const { width = 900, height = 500 } = Astro.props;
 
       ctx.fillStyle = "#fff";
       ctx.font = "12px Arial";
-      ctx.fillText(mon.name, x0 + boxSize / 2, startY + boxSize + 15);
+      ctx.fillText(
+        mon.name.toUpperCase(),
+        x0 + boxSize / 2,
+        startY + boxSize + 15,
+      );
     }
   }
 
@@ -706,7 +769,13 @@ const { width = 900, height = 500 } = Astro.props;
 
     if (gameState !== "encounter") return;
 
-    if (x > viewW - 140 && x < viewW - 40 && y > viewH - 120 && y < viewH - 90) {
+    if (
+      x > viewW - 140 &&
+      x < viewW - 40 &&
+      y > viewH - 120 &&
+      y < viewH - 90
+    ) {
+      playSound(sounds.button);
       partyOpen = true;
     }
 
@@ -722,9 +791,11 @@ const { width = 900, height = 500 } = Astro.props;
 
       if (team.length >= 6) {
         showMessage("Your party is full!");
+        playSound(sounds.button);
         return;
       }
 
+      playSound(sounds.throw);
       const success = Math.random() < rate / 255;
 
       catchAnimation = {
@@ -738,6 +809,7 @@ const { width = 900, height = 500 } = Astro.props;
 
     // Run knop
     if (x > viewW - 140 && x < viewW - 40 && y > viewH - 40 && y < viewH - 10) {
+      playSound(sounds.run);
       endEncounter();
     }
   });

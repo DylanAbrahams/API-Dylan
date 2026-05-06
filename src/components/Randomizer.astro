@@ -205,7 +205,6 @@ document.addEventListener("DOMContentLoaded", () => {
       backSprite: p.backSprite // ✅ also stored (future-proof)
     });
 
-    // 🔥 trigger update event
     window.dispatchEvent(new Event("pokemon-updated"));
 
     display.innerHTML = "";
