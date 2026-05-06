@@ -192,6 +192,7 @@ const { width = 900, height = 500 } = Astro.props;
           types: d?.types?.map((t) => t.type.name) || [],
           frontSprite: d?.sprites?.front_default || "",
           backSprite: d?.sprites?.back_default || "",
+          cries: d?.cries || null,
         };
       }),
     );
@@ -262,6 +263,16 @@ const { width = 900, height = 500 } = Astro.props;
 
     backSprite = new Image();
     backSprite.src = playerMon?.backSprite || playerMon?.frontSprite || "";
+
+    // CRY GELUID
+    const cryUrl =
+      currentPokemon?.cries?.latest || currentPokemon?.cries?.legacy;
+
+    setTimeout(() => {
+      const cry = new Audio(cryUrl);
+      cry.volume = 0.2;
+      cry.play();
+    }, 1000);
   }
 
   function endEncounter() {
@@ -357,6 +368,7 @@ const { width = 900, height = 500 } = Astro.props;
             name: currentPokemon.name,
             frontSprite: currentPokemon.frontSprite,
             backSprite: currentPokemon.backSprite,
+            cries: currentPokemon.cries,
           });
 
           window.dispatchEvent(new Event("pokemon-updated"));
@@ -370,6 +382,19 @@ const { width = 900, height = 500 } = Astro.props;
           }, 1200);
         } else {
           playSound(sounds.breakfree);
+
+          // Pokémon cry bij ontsnappen
+          const cryUrl =
+            currentPokemon?.cries?.latest || currentPokemon?.cries?.legacy;
+
+          if (cryUrl) {
+            setTimeout(() => {
+              const cry = new Audio(cryUrl);
+              cry.volume = 0.2;
+              cry.play().catch(() => {});
+            }, 200);
+          }
+
           showMessage("Oh no! It broke free!");
           uiMode = "message";
 
@@ -756,6 +781,15 @@ const { width = 900, height = 500 } = Astro.props;
 
           backSprite = new Image();
           backSprite.src = mon.backSprite || mon.frontSprite || "";
+
+          // Cry van je eigen Pokémon
+          const cryUrl = mon?.cries?.latest || mon?.cries?.legacy;
+
+          if (cryUrl) {
+            const cry = new Audio(cryUrl);
+            cry.volume = 0.2;
+            cry.play().catch(() => {});
+          }
 
           localStorage.setItem("activePokemonIndex", i);
           partyOpen = false;
