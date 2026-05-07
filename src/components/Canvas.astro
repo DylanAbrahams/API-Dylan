@@ -1,5 +1,15 @@
 <div class="game-wrapper">
   <canvas id="main-canvas" width=900 height=500></canvas>
+
+  <div class="mobile-controls">
+  <button data-key="ArrowUp">▲</button>
+
+  <div class="row">
+    <button data-key="ArrowLeft">◀</button>
+    <button data-key="ArrowDown">▼</button>
+    <button data-key="ArrowRight">▶</button>
+  </div>
+</div>
 </div>
 
 <style>
@@ -16,6 +26,40 @@
     border: 4px solid #000000;
     background: #000000;
   }
+
+  .mobile-controls {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  z-index: 10;
+}
+
+.mobile-controls .row {
+  display: flex;
+  gap: 10px;
+}
+
+.mobile-controls button {
+  width: 60px;
+  height: 60px;
+  font-size: 20px;
+  border-radius: 12px;
+  border: none;
+  background: rgba(255,255,255,0.2);
+  color: white;
+  backdrop-filter: blur(5px);
+}
+
+@media (max-width: 768px) {
+  .mobile-controls {
+    display: flex;
+  }
+}
 </style>
 
 <script type="module">
@@ -427,6 +471,29 @@
     }
 
     player.moving = dx !== 0 || dy !== 0;
+
+        /* -------------------- MOBILE -------------------- */
+
+    const mobileButtons = document.querySelectorAll(".mobile-controls button");
+
+    mobileButtons.forEach((btn) => {
+      const key = btn.dataset.key;
+
+      btn.addEventListener("touchstart", (e) => {
+        e.preventDefault();
+        keys[key] = true;
+      });
+
+      btn.addEventListener("touchend", (e) => {
+        e.preventDefault();
+        keys[key] = false;
+      });
+
+      // extra support voor muis (debug)
+      btn.addEventListener("mousedown", () => (keys[key] = true));
+      btn.addEventListener("mouseup", () => (keys[key] = false));
+      btn.addEventListener("mouseleave", () => (keys[key] = false));
+    });
 
     /* -------------------- MOVEMENT -------------------- */
     if (player.moving) {
