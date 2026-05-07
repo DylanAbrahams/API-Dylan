@@ -1,3 +1,5 @@
+// Bron over LocalStorage met getItem, setItem, JSON.parse en JSON.stringify:
+// Link: https://stackoverflow.com/questions/64732889/filtering-local-storage-data-by-field-and-output-it-to-page
 const KEY = "my_pokemon_list";
 
 export function loadPokemon() {

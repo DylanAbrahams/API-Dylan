@@ -20,6 +20,7 @@ type PokemonType = {
   moves: { move: { name: string } }[];
 };
 
+// Species = extra info zoals genus (soortnaam), evoluties, etc.
 type SpeciesType = {
   genera: { genus: string; language: { name: string } }[];
 };
@@ -38,16 +39,18 @@ if (pokemon) {
   const prevId = pokemon.id > 1 ? pokemon.id - 1 : null;
   const nextId = pokemon.id + 1;
 
+  // Vorige 
   if (prevId) {
     const resPrev = await fetch(`https://pokeapi.co/api/v2/pokemon/${prevId}`);
     if (resPrev.ok) prevPokemon = await resPrev.json();
   }
 
+  // Volgende 
   const resNext = await fetch(`https://pokeapi.co/api/v2/pokemon/${nextId}`);
   if (resNext.ok) nextPokemon = await resNext.json();
 }
-/* ----------------------------- */
 
+// Huidige 
 if (pokemon) {
   const speciesRes = await fetch(
     `https://pokeapi.co/api/v2/pokemon-species/${pokemon.name}`
@@ -289,6 +292,8 @@ const speciesName =
 )}
 
 <style>
+  /* De kleuren van de kaarten staan in global.css */
+
 .page {
   min-height: 80vh;
   display: flex;
@@ -296,8 +301,6 @@ const speciesName =
   align-items: center;
   background: #f0f8ff;
 }
-
-/* ROW */
 .card-row {
   display: flex;
   align-items: center;
@@ -305,30 +308,21 @@ const speciesName =
   gap: 20px;
 }
 
-/* SIDE CARDS */
 .side-card {
   transform: scale(0.75);
   opacity: 0.5;
   transition: all 0.25s ease;
   text-decoration: none;
 }
-
 .side-card:hover {
   transform: scale(0.85);
   opacity: 0.85;
 }
-
 .prev-card {
   rotate:-3deg;
 }
-
 .next-card {
   rotate:3deg;
-}
-
-/* prevent nested interaction issues */
-.side-card .card-shell {
-  pointer-events: none;
 }
 
 .card-shell {
@@ -345,24 +339,6 @@ const speciesName =
   color: #111;
 }
 
-.type-normal { background: linear-gradient(#f5f5f5, #e0e0e0); }
-.type-fire { background: linear-gradient(#fff3e0, #ffe0b2); }
-.type-water { background: linear-gradient(#e3f2fd, #bbdefb); }
-.type-electric { background: linear-gradient(#fffde7, #fff59d); }
-.type-grass { background: linear-gradient(#e8f5e9, #c8e6c9); }
-.type-ice { background: linear-gradient(#e0f7fa, #b2ebf2); }
-.type-fighting { background: linear-gradient(#ffebee, #ef9a9a); }
-.type-poison { background: linear-gradient(#f3e5f5, #ce93d8); }
-.type-ground { background: linear-gradient(#efebe9, #d7ccc8); }
-.type-flying { background: linear-gradient(#e1f5fe, #b3e5fc); }
-.type-psychic { background: linear-gradient(#fce4ec, #f8bbd0); }
-.type-bug { background: linear-gradient(#f1f8e9, #dcedc8); }
-.type-rock { background: linear-gradient(#fbe9e7, #bcaaa4); }
-.type-ghost { background: linear-gradient(#ede7f6, #b39ddb); }
-.type-dragon { background: linear-gradient(#e8eaf6, #9fa8da); }
-.type-dark { background: linear-gradient(#efebe9, #bcaaa4); }
-.type-steel { background: linear-gradient(#eceff1, #b0bec5); }
-.type-fairy { background: linear-gradient(#fce4ec, #f48fb1); }
 
 .top {
   display: flex;

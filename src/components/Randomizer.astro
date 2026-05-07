@@ -3,10 +3,7 @@ const { pokemonList } = Astro.props;
 ---
 
 <style>
-
-/* =========================
-   CONTROLS
-========================= */
+/* Er mist wat styling, die zat in global.css maar voor overzicht heb ik die eruit gehaald, alleen de moves, het plaatje en de catch knop werken niet meer */
 
 .random-container {
   text-align: center;
@@ -130,7 +127,7 @@ document.addEventListener("DOMContentLoaded", () => {
         moves: d.moves || [],
         artwork: d.sprites?.other?.["official-artwork"]?.front_default || '',
         frontSprite: d.sprites?.front_default || '',
-        backSprite: d.sprites?.back_default || '', // ✅ added
+        backSprite: d.sprites?.back_default || '', 
         id: d.id || 0
       };
     }));

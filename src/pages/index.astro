@@ -6,6 +6,8 @@ import Card from "../components/Card.astro";
 const response = await fetch(POKEMON_URL);
 const data = await response.json();
 
+// Promise.all - Zorgt ervoor dat alles is geladen voordat we verder gaan
+// Link: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all
 const pokemonList = await Promise.all(
   (data.results as { name: string; url: string }[]).map(async (poke) => {
     try {

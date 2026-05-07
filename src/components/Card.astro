@@ -36,6 +36,8 @@ const primaryType = types?.[0] ?? "normal";
 </a>
 
 <style>
+/* De kleuren van de kaarten staan in global.css*/
+
 .card-shell {
   display: block;
   text-decoration: none;
@@ -47,7 +49,6 @@ const primaryType = types?.[0] ?? "normal";
   }
 }
 
-/* BASE CARD*/
 .card-face {
   padding: 12px;
   font-family: Arial, sans-serif;
@@ -60,28 +61,6 @@ const primaryType = types?.[0] ?? "normal";
     inset 0 0 0 2px rgba(255,255,255,0.25);
 }
 
-/* ===== TYPE COLORS ===== */
-
-.type-normal { background: linear-gradient(#f5f5f5, #e0e0e0); }
-.type-fire { background: linear-gradient(#fff3e0, #ffe0b2); }
-.type-water { background: linear-gradient(#e3f2fd, #bbdefb); }
-.type-electric { background: linear-gradient(#fffde7, #fff59d); }
-.type-grass { background: linear-gradient(#e8f5e9, #c8e6c9); }
-.type-ice { background: linear-gradient(#e0f7fa, #b2ebf2); }
-.type-fighting { background: linear-gradient(#ffebee, #ef9a9a); }
-.type-poison { background: linear-gradient(#f3e5f5, #ce93d8); }
-.type-ground { background: linear-gradient(#efebe9, #d7ccc8); }
-.type-flying { background: linear-gradient(#e1f5fe, #b3e5fc); }
-.type-psychic { background: linear-gradient(#fce4ec, #f8bbd0); }
-.type-bug { background: linear-gradient(#f1f8e9, #dcedc8); }
-.type-rock { background: linear-gradient(#fbe9e7, #bcaaa4); }
-.type-ghost { background: linear-gradient(#ede7f6, #b39ddb); }
-.type-dragon { background: linear-gradient(#e8eaf6, #9fa8da); }
-.type-dark { background: linear-gradient(#efebe9, #bcaaa4); }
-.type-steel { background: linear-gradient(#eceff1, #b0bec5); }
-.type-fairy { background: linear-gradient(#fce4ec, #f48fb1); }
-
-/* ===== LAYOUT ===== */
 
 .top {
   display: flex;
