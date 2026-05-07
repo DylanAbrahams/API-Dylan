@@ -2,6 +2,56 @@
 const { pokemonList } = Astro.props;
 ---
 
+<style>
+
+/* =========================
+   CONTROLS
+========================= */
+
+.random-container {
+  text-align: center;
+  margin: 2rem auto;
+  max-width: 500px;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+#game-slider {
+  width: 150px;
+}
+
+#random-btn,
+#catch-btn {
+  padding: 0.8rem 1.5rem;
+  font-size: 1.2rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  background-color: #f08030;
+  color: #fff;
+  transition: 0.2s;
+  margin-top: 0.5rem;
+}
+
+#random-btn:hover,
+#catch-btn:hover {
+  background-color: #d06020;
+}
+
+#type-filter {
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+</style>
+
 <div class="random-container">
   <div class="controls">
     <label for="game-slider">Pokémon kracht / spelprogressie:</label>
@@ -202,7 +252,7 @@ document.addEventListener("DOMContentLoaded", () => {
     addPokemon({
       name: p.name,
       frontSprite: p.frontSprite,
-      backSprite: p.backSprite // ✅ also stored (future-proof)
+      backSprite: p.backSprite 
     });
 
     window.dispatchEvent(new Event("pokemon-updated"));

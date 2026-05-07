@@ -3,12 +3,12 @@ export const grass = [
     { x: 390, y: 325, w: 150, h: 90, types: ["ground", "rock"] }, 
  
     // Gras linksboven 
-    { x: 575, y: 450, w: 160, h: 120, types: ["psychic", "poison", "ghost"] }, 
+    { x: 575, y: 450, w: 160, h: 120, types: ["psychic", "poison", "ghost", "fairy"] }, 
  
     // Boven (3 hitboxes)
-    { x: 865, y: 290, w: 85, h: 90, types: ["flying", "normal"] },
-    { x: 895, y: 350, w: 190, h: 65, types: ["flying", "normal"] }, 
-    { x: 930, y: 415, w: 100, h: 30, types: ["flying", "normal"] },
+    { x: 865, y: 290, w: 85, h: 90, types: ["flying", "normal", "fighting"] },
+    { x: 895, y: 350, w: 190, h: 65, types: ["flying", "normal", "fighting"] }, 
+    { x: 930, y: 415, w: 100, h: 30, types: ["flying", "normal", "fighting"] },
  
     // Midden (3 hitboxes)
     { x: 1250, y: 350, w: 160, h: 65, types: ["grass", "bug"] },

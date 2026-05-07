@@ -668,6 +668,7 @@
 
   /* -------------------- ALLE ENCOUNTER SUBFUNCTIES -------------------- */
 
+  // Naam van de pokemon
   function drawBattleUI() {
     const name = currentPokemon.name.toUpperCase();
 
@@ -676,11 +677,11 @@
     const w = 260;
     const h = 50;
 
-    // outer border (zwart)
+    // border 
     ctx.fillStyle = "#000";
     ctx.fillRect(x - 2, y - 2, w + 4, h + 4);
 
-    // inner background
+    // achtergrond
     ctx.fillStyle = "#f8f8f8";
     ctx.fillRect(x, y, w, h);
 
@@ -728,15 +729,15 @@
   }
 
   function drawButton(text, x, y, selected = false) {
-    // outer border (zwart)
+    // border
     ctx.fillStyle = "#000";
     ctx.fillRect(x - 2, y - 2, 104, 34);
 
-    // inner background
+    // achtergrond
     ctx.fillStyle = selected ? "#ffd84d" : "#f8f8f8";
     ctx.fillRect(x, y, 100, 30);
 
-    // inner border (donkergrijs)
+    // inner border
     ctx.strokeStyle = "#444";
     ctx.strokeRect(x, y, 100, 30);
 

@@ -229,10 +229,9 @@ Als laatste heb ik nog muziek en sound effects toegevoegd. Voor de muziek heb ik
 
 Voor sound effects heb ik 6 verschillende audio bestanden, de bronnen staan allemaal in de bronnenlijst. Dit waren Myinstants, Soundeffects.fandom en sounds.spritersresource (van Pokemon fire red). De laatste van de 3 was extra leuk om sound effects uit te vinden want alle sound files hadden geen duidelijke namen, maar hebben allemaal namen als firered_00D7.wav. Dus ik kon lekker elk geluid afspelen totdat ik had gevonden wat ik nodig had. Ik was al die tijd opzoek naar geluiden voor de catch animatie. Anyways het toevoegen van de geluiden ging voor de meeste wel prima, alleen voor de catch animatie moest ik een beetje priegelen aan mijn code aangezien ik een geluid moet afspelen afhankelijk van of je de pokemon wel/niet gevangen hebt.
 
-Nog een kleine fix, ik heb ervoor gezorgd dat je niet uit de map kan lopen. Als je buiten de coordinaten van de canvas bent gekomen, stop je met bewegen. in principe een onzichtbare muur om de map heen.
+Nog een kleine fix, ik heb ervoor gezorgd dat je niet uit de map kan lopen. Als je buiten de coordinaten van de canvas bent gekomen, stop je met bewegen. in principe een onzichtbare muur om de map heen. Ook heb ik mn canvas nog responsive gemaakt dat hij speelbaar is op mobiel. Je hebt onscreen keybinds waarmee je de speler kan besturen. Het is snel in elkaar gezet, maar hij is nu wel te spelen op mobiel.
 
 
-- Detailpagina View transitiions 
 
 
 
@@ -249,7 +248,7 @@ Ik heb nog een extra pagina die niet "officieel" bij de site hoort: de randomize
 
 Een paar dingen die ik niet heb gedaan, wat ik nog graag had willen doen als ik meer tijd had. Ik had al code om de sterkte van pokemon te bepalen in de randomizer pagina, maar ik heb dit niet toegepast op mijn prototype aangezien ik al filters had op type wat al voor genoeg variatie zorgde in de wereld. Misschien als ik een grotere wereld had gemaakt met meer grasvelden had ik dit wel gedaan. Verder had ik heel graag een vechtsysteem erin willen zetten. Ik denk dat dit wel goed te doen was geweest, maar ik wilde niet riskeren dat al mijn code weer stuk zou gaan en ik heb gekozen om meer tijd te stoppen in betere styling, animatie, geluid etc. Ik heb geen starter pokemon toegevoegd, verder gebeurt er niks als je geen pokemon hebt, het spel gaat gewoon door maar dan zonder pokemon. Verder had ik altijd nog meer moeite kunnen doen in styling op de overzichts en detailpagina. Ook was het leuk geweest als ik de overzichtspagina alleen had gemaakt voor pokemon die je hebt gezien tijdens encounters, maar dat ben ik ook niet aan toe gekomen. En een animatie/transitie voor wanneer een battle begint was ook leuk geweest.
 
-
+View transition
 
 ## Bronnenlijst
 Video over Astro
