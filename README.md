@@ -187,8 +187,8 @@ Ik wilde het natuurlijk uit laten zien als het echte spel, dus ik heb een plaatj
 Verder heb ik deze week nog de site online gekregen op render. Ik moest wat dingen aanpassen, zoals de locaties van bepaalde images. Verder is het zo dat het canvas niet altijd laadt wanneer ik op render aan het hosten ben. Als ik de pagina ververs dan doet hij het wel. Ik moet nog kijken of ik dat kan fixen, zo niet is het niet heel erg.
 
 ### Gesprek met Cyd & clubje
+Ik heb vrijdag mijn gesprek gehad met mijn clubje. Ik heb hier een lijst met alles wat ik in de meivakantie nog wil doen/verbeteren. Het meeste feedback die ik kreeg tijdens het gesprek ging over het design en voor canvas was het vooral dingen die ik zelf nog wilde toevoegen. Het is een stuk meer dan dat ik dacht toen ik alles aan het opschrijven was, maar ik ga zien hoeveel hiervan ik nog ga afkrijgen.
 
-Aantekeningen.
 Design:
 - Overzichtspagina moet beter 
 - Navigatie moet beter of er helemaal uit
@@ -217,26 +217,37 @@ Ik heb swapfunctie toegevoegd. In de battle zie je naast de run en catch knoppen
 
 De header is nu niet meer een header maar een toggle knop in de hoek. Dit is een stuk meer immersief en past meer bij de vibe van een video game. Nu kan ik ook het canvas full screen maken zonder dat het er slecht uitziet. Verder heb ik de randomizer eruit gehaald. De pagina blijft wel bestaan als debugger maar hoort niet bij de ervaring.
 
-Ik heb de footer omgezet naar een lijst aan de zijkant. Dit ziet er al wat beter uit. Je ziet al je pokemon links van je scherm. 
+Ik heb de footer omgezet naar een lijst aan de zijkant. Dit ziet er al wat beter uit. Je ziet al je pokemon links van je scherm. Dit is een stuk fijner kijken aangezien de pokemon nu goed zichtbaar zijn, maar ook niet in de weg voelen.
 
-Canvas full screen maken (buttons schalen niet mee lol)
+Daarna heb ik het canvas fullscreen gemaakt. Nu dat de header en footer vervangen zijn, kan ik de canvas het hele scherm laten opnemen. Ik wilde het scherm wel op een consistente layout houden, vooral omdat alle sprites in de encounter specifieke posities hebben. Het probleem was als ik het canvas ga stylen met CSS om deze volledige breedte te maken dan werken de buttons tijdens de encounter niet meer aangezien deze afhangen van de coordinaten die niet meeschalen met de visuals van de buttons. Uiteindelijk na een hoop gestunt heb ik het gefixed door de canvas in een wrapper te zetten, deze op 100vw/vh te zetten, de width en height in het canvas element te definieren voor het formaat en code te schrijven in het script waardoor het canvas mee scalet als je een ander scherm formaat hebt.
 
-Buttons wat beter + Dialoog box
+Ik heb in de encounter een message box toegevoegd waar tekst in komt te staan die feedback geven aan de gebruiken wanneer je een pokemon vangt. Ik vond het een beetje lelijk dat de message box boven de knoppen kwam te staan, dus heb ik ervoor gezorgd dat de buttons onzichtbaar worden als de message box zichtbaar is. Verder heb ik de buttons en naam van de pokemon iets mooier gemaakt. Nog wel simpel maar wel prima. 
 
-Catch animatie
+Op een van de laatste dagen wilde ik nog een catch animatie toevoegen. Hier ben ik wel een tijdje mee bezig geweest. In deze animatie zitten meerdere states: het gooien van de pokeball, 3x schudden, succesvol de pokemon vangen en de pokemon vrij laten breken. Voor de duidelijkheid, de pokeball schudt altijd 3 keer, ik heb geen logica voor dat hij 0-3 keer gaat schudden. Ik heb de logica van de catch opsplitsen in meerdere states in een functie genaamd updateCatchAnimation en de animatie zelf in draw(). Ik vond draw() wel onoverzichtelijk lang worden (honderden regels) dus ik heb alles opgesplitst in meerdere functies. Draw() is nu opgesplitst in drawWorld, voor de wereld, drawEncounter, voor alles tijdens de encounter (de langste by far, deze is ook opgesplitst in 5 anderen, waaronder de naam, de buttons, de pokemon, de message box en nu ook de pokeball), en drawParty die specifiek is voor wanneer je je pokemon swapt aangezien deze niet altijd zichtbaar is. Ik dacht erover om de code ook te verdelen over meerdere scripts maar dat leek me alsnog verwarrend dus ik heb het zo gelaten.
+
+Als laatste heb ik nog muziek en sound effects toegevoegd. Voor de muziek heb ik op YouTube muziek uit Pokemon Diamond gevonden, bronnen staan in de bronnenlijst. Ik heb voor de worldview Route 201/202 gekozen en voor de encounter de Wild Pokemon Battle. In de code wordt deze muziek gespeeld als je op de canvas pagina staat en afhankelijk van of je in de wereld of encounter zit, speelt de bijhorende muziek. 
+
+Voor sound effects heb ik 6 verschillende audio bestanden, de bronnen staan allemaal in de bronnenlijst. Dit waren Myinstants, Soundeffects.fandom en sounds.spritersresource (van Pokemon fire red). De laatste van de 3 was extra leuk om sound effects uit te vinden want alle sound files hadden geen duidelijke namen, maar hebben allemaal namen als firered_00D7.wav. Dus ik kon lekker elk geluid afspelen totdat ik had gevonden wat ik nodig had. Ik was al die tijd opzoek naar geluiden voor de catch animatie. Anyways het toevoegen van de geluiden ging voor de meeste wel prima, alleen voor de catch animatie moest ik een beetje priegelen aan mijn code aangezien ik een geluid moet afspelen afhankelijk van of je de pokemon wel/niet gevangen hebt.
+
+Nog een kleine fix, ik heb ervoor gezorgd dat je niet uit de map kan lopen. Als je buiten de coordinaten van de canvas bent gekomen, stop je met bewegen. in principe een onzichtbare muur om de map heen.
 
 
-
-Design:
-- Detailpagina achtergrond plaatje
 - Detailpagina View transitiions 
 
-Canvas Logica:
-- Muren boven/onder
-- Starter Pokemond
-- Muziek / SFX
-- Betere knoppen tijdens encounter
-- Encounter animatie (?)
+
+
+## Eindreflectie
+Ik ben zeer tevreden op wat ik heb gemaakt voor dit vak. Van alle vakken is dit degene waar ik tot nu toe het meeste tijd en energie heb gestopt. Ik heb niet alleen een pokemon website gemaakt die data ophaalt, maar ook in interactief spel waarin je rond kan lopen en net als in het echte spel verschillende pokemon kan vinden en vangen. Alle pokemon data in mijn website komen direct uit de API, waaronder de namen, de sprites, de statistieken, de typings, de catch rates etc. De enige dingen die niet uit de API komen zijn de achtergronden, de speler sprites, de pokeball sprite en de audio (behalve de pokemon cries, die komen wel uit de API). 
+
+Voor mijn content API heb ik PokeAPI gebruikt. Ik had een aantal ideeen, maar de Pokemon API heeft zo veel informatie dat ik er genoeg vrijheid in heb om ermee te kunnen doen wat ik zelf wil. Ik denk dat goed heb laten zien dat ik data kan ophalen uit een API aangezien er veel verschillende informatie uit de PokeAPI te halen is en ik er veel gebruik van heb gemaakt. Daarnaast vind ik dat ik goed gebruik heb gemaakt van astro components, al had er hier en daar wat meer gekund. Ik heb Header.astro (wat nu maar 1 knop is) waarmee je tussen de overzichts en wereld pagina kunt togglen, een pokemon overlay, een canvas en een kaart component. Ik heb een volledige lijst met alle pokemon op de overzichtspagina. Voor elke pokemon heb ik een detailpagina die bepaald wordt met de titel [name].astro, waarvan de name steeds wordt aangepast door de naam van elke pokemon. Op die detailpagina staat allemaal informatie over die pokemon gestyled als een Pokemon TCG kaart. Verder zie je ook de info van de vorige en volgende pokemon en kun je naar die pagina's. 
+
+Mijn 2 web API's zijn Canvas & LocalStorage. Om te beginnen met canvas. Mijn meest indrukwekkende pagina van mijn site is de world pagina. Hierin heb je een canvas waarin je in een Pokemon wereld rond kan lopen en pokemon kan vinden in het gras. Je hebt 2 states: World & Encounter. In World loop je als de speler rond in de wereld met WASD/Pijltoetsen. De camera beweegt mee als je niet bij de rand van het scherm staat. Verder zijn er hitboxes voor muren (bomen/stenen) en gras. Als je in het gras loopt heb je per 0.25 seconden een 1/5 kans (geregelt in de config bovenaan de code) dat je een pokemon vindt. Dit brengt je in de encounter state. In de encounter state worden veel dingen getekent waaronder een nieuwe achtergrond, een wilde pokemon + naam, je eigen pokemon, 3 knoppen, de pokeball animatie wanneer je vangt en de partyUI wanneer je swapt. 
+
+Voor LocalStorage heb ik ervoor gezorgd dat je een team van maximaal 6 pokemon kan samenstellen door deze te vangen tijdens de encounters. In een script genaamd PokemonStorage.js. Hierin worden pokemon opgeslagen. Verder staan er functies voor het laden, het opslaan, het toevoegen, het verwijderen van pokemon. Ik heb een component genaamd PokemonOverlay die op elke pagina te zien is, vanwege MainLayout. In MainLayout.astro zit er een script waarmee je de pokemon kunt verwijderen door op het kruisje te klikken bij elke pokemon. Met het canvas script worden AddPokemon() en LoadPokemon() toegepast zodat deze zichtbaar zijn in de encounter en je nieuwe kunt vangen. 
+
+Ik heb nog een extra pagina die niet "officieel" bij de site hoort: de randomizer pagina. Dit was een pagina waarmee ik de encounters ging programmeren voordat ik bezig ging met een canvas. Je hebt een knop en deze spawnt een random pokemon. Verder krijg je max 4 random moves te zien die deze pokemon kan leren. Je kunt deze pokemon vangen net als in de wereld pagina. Daarnaast kun je filteren op type en sterkte van de pokemon. De sterkte van de pokemon is het gemiddelde van alle stats van een pokemon waaronder HP, Defense, Attack, Speed etc. Verder is er nog wat extra logica balans voor pokemon die bijvoorbeeld hele goede defense hebben, maar overall niet heel goed zijn, dat die dan minder zwaar meetellen. Ik benoem deze pagina omdat hier een aantal punten inzitten die ik graag in het spel had geimplementeerd maar daar niet aan toe ben gekomen.
+
+Een paar dingen die ik niet heb gedaan, wat ik nog graag had willen doen als ik meer tijd had. Ik had al code om de sterkte van pokemon te bepalen in de randomizer pagina, maar ik heb dit niet toegepast op mijn prototype aangezien ik al filters had op type wat al voor genoeg variatie zorgde in de wereld. Misschien als ik een grotere wereld had gemaakt met meer grasvelden had ik dit wel gedaan. Verder had ik heel graag een vechtsysteem erin willen zetten. Ik denk dat dit wel goed te doen was geweest, maar ik wilde niet riskeren dat al mijn code weer stuk zou gaan en ik heb gekozen om meer tijd te stoppen in betere styling, animatie, geluid etc. Ik heb geen starter pokemon toegevoegd, verder gebeurt er niks als je geen pokemon hebt, het spel gaat gewoon door maar dan zonder pokemon. Verder had ik altijd nog meer moeite kunnen doen in styling op de overzichts en detailpagina. Ook was het leuk geweest als ik de overzichtspagina alleen had gemaakt voor pokemon die je hebt gezien tijdens encounters, maar dat ben ik ook niet aan toe gekomen. En een animatie/transitie voor wanneer een battle begint was ook leuk geweest.
 
 
 

@@ -1,9 +1,5 @@
----
-const { width = 900, height = 500 } = Astro.props;
----
-
 <div class="game-wrapper">
-  <canvas id="main-canvas" width="900" height="500"></canvas>
+  <canvas id="main-canvas" width=900 height=500></canvas>
 </div>
 
 <style>
@@ -41,8 +37,8 @@ const { width = 900, height = 500 } = Astro.props;
   let offsetY = 0;
 
   function resizeCanvas() {
-    const baseW = 900;
-    const baseH = 500;
+    const baseW = canvas.width;
+    const baseH = canvas.height;
 
     const screenW = window.innerWidth;
     const screenH = window.innerHeight;
@@ -112,7 +108,7 @@ const { width = 900, height = 500 } = Astro.props;
 
   /* -------------------- STATE -------------------- */
   let lastTime = 0;
-  let gameState = "world";
+  let gameState = "world"; // "world" | "encounter"
   let currentPokemon = null;
   let enrichedList = [];
   let battleSprite = new Image();
@@ -131,6 +127,7 @@ const { width = 900, height = 500 } = Astro.props;
     caughtSoundPlayed: false,
   };
 
+  // Omdat je niet automatisch muziek kan afspelen, begint de muziek pas bij een klik
   window.addEventListener("click", () => {
     if (!musicStarted) {
       worldMusic.play();
@@ -214,25 +211,6 @@ const { width = 900, height = 500 } = Astro.props;
   }
 
   /* -------------------- ENCOUNTER -------------------- */
-  function weightedRandom(list, target = 50) {
-    const k = 0.08;
-
-    const weights = list.map((p) => {
-      const avg =
-        p.stats.reduce((s, x) => s + x.base_stat, 0) / (p.stats.length || 1);
-      return Math.exp(-k * Math.abs(avg - target));
-    });
-
-    let sum = weights.reduce((a, b) => a + b, 0);
-    let rnd = Math.random() * sum;
-
-    for (let i = 0; i < list.length; i++) {
-      if ((rnd -= weights[i]) < 0) return list[i];
-    }
-
-    return list[0];
-  }
-
   function startEncounter(zone) {
     if (!enrichedList.length) return;
 
@@ -464,6 +442,12 @@ const { width = 900, height = 500 } = Astro.props;
     if (!isColliding(nextX, player.y)) player.x = nextX;
     if (!isColliding(player.x, nextY)) player.y = nextY;
 
+    /* -------------------- WORLD BOUNDS -------------------- */
+    const half = player.size / 2;
+
+    player.x = Math.max(half, Math.min(player.x, img.width - half));
+    player.y = Math.max(half, Math.min(player.y, img.height - half));
+
     savePlayer();
 
     /* -------------------- GRASS ENCOUNTER -------------------- */
@@ -620,16 +604,32 @@ const { width = 900, height = 500 } = Astro.props;
   function drawBattleUI() {
     const name = currentPokemon.name.toUpperCase();
 
-    ctx.textAlign = "center";
+    const x = 20;
+    const y = 20;
+    const w = 260;
+    const h = 50;
+
+    // outer border (zwart)
+    ctx.fillStyle = "#000";
+    ctx.fillRect(x - 2, y - 2, w + 4, h + 4);
+
+    // inner background
+    ctx.fillStyle = "#f8f8f8";
+    ctx.fillRect(x, y, w, h);
+
+    // inner border
+    ctx.strokeStyle = "#444";
+    ctx.strokeRect(x, y, w, h);
+
+    // tekst
+    ctx.fillStyle = "#000";
+    ctx.font = "bold 20px Arial";
+    ctx.textAlign = "left";
     ctx.textBaseline = "middle";
 
-    ctx.fillStyle = "rgba(0,0,0,0.6)";
-    ctx.fillRect(20, 20, 260, 50);
+    ctx.fillText(name, x + 16, y + h / 2);
 
-    ctx.fillStyle = "#fff";
-    ctx.font = "bold 20px Arial";
-    ctx.fillText(name, 150, 45);
-
+    // reset
     ctx.textAlign = "left";
     ctx.textBaseline = "alphabetic";
   }
