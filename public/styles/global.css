@@ -102,6 +102,23 @@ h1 {
   image-rendering: pixelated;
 }
 
+@media (max-width: 500px) {
+  .pokemon-overlay {
+    left: 10px;
+  }
+
+  .pokemon-overlay li {
+    width: 72px;
+    height: 72px;
+  }
+
+  .pokemon-overlay img {
+    width: 64px;
+    height: 64px;
+  }
+}
+
+
 /* ===== DELETE BUTTON ===== */
 .pokemon-overlay button {
   position: absolute;

@@ -265,6 +265,15 @@ Link: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_O
 LocalStorage - getItem, setItem, JSON.parse en JSON.stringify
 Link: https://stackoverflow.com/questions/64732889/filtering-local-storage-data-by-field-and-output-it-to-page
 
+Kleuren met canvas
+Link: https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Applying_styles_and_colors
+
+Tekst met canvas
+Link: https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Drawing_text
+
+Images met canvas
+Link: https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Using_images
+
 Tilemap (niet gebruikt)
 Link: https://projectpokemon.org/home/forums/topic/54669-ndsmm-how-to-map-in-pokemon-gen-4/
 
@@ -315,8 +324,11 @@ Link: https://sounds.spriters-resource.com/game_boy_advance/pokemonfireredleafgr
 
 ChatGPT
 Om gebruik te maken van PokeAPI moest ik weten waar alle alle info stond, ChatGPT wist waar wat was opgeslagen, bv. plaatjes, moves, types etc.
-Vooral voor de detailpagina waar veel info werd laten zien.
+Vooral voor de detailpagina waar veel info werd laten zien. Met 
 Prompt: "Ik gebruikt PokeAPI, hoe kan ik welke informatie weergeven op mijn site?"
+
+Het automatisch schalen van de canvas, zodat de buttons op elk schermformaat werken. Uiteindelijk heb ik een wrapper eromheen gedaan en de canvas resized in het script
+Prompt: "Ik wil mijn canvas mee laten schalen zonder deze met CSS groter te maken zodat de buttons blijven werken"
 
 
 

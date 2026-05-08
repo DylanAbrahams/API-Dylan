@@ -80,6 +80,8 @@
   let offsetX = 0;
   let offsetY = 0;
 
+  // Ik heb ChatGPT gebruikt om de canvas automatisch mee te laten schalen, dit heb ik zo gedaan zodat de buttons op elk schermformaat werken
+  // Prompt: Ik wil mijn canvas mee laten schalen zonder deze met CSS groter te maken zodat de buttons blijven werken
   function resizeCanvas() {
     const baseW = canvas.width;
     const baseH = canvas.height;
@@ -796,8 +798,10 @@
       ctx.filter = "brightness(0.5)";
     }
 
+    // Positie X, Positie Y, Breedte, Hoogte 
     ctx.drawImage(pokeballImg, -size / 2, -size, size, size);
 
+    // reset transform
     ctx.restore();
 
     ctx.globalAlpha = 1;
@@ -825,6 +829,7 @@
       return;
     }
 
+    // Dit zorgt ervoor dat we weten hoe groot het canvas is/waar hij staat
     const rect = canvas.getBoundingClientRect();
     const x = (e.clientX - rect.left) / scale;
     const y = (e.clientY - rect.top) / scale;
@@ -872,11 +877,7 @@
     if (gameState !== "encounter") return;
 
     if (
-      x > viewW - 140 &&
-      x < viewW - 40 &&
-      y > viewH - 120 &&
-      y < viewH - 90
-    ) {
+      x > viewW - 140 && x < viewW - 40 && y > viewH - 120 && y < viewH - 90) {
       playSound(sounds.button);
       partyOpen = true;
     }
@@ -938,6 +939,8 @@
     requestAnimationFrame(loop);
   });
 
+  /* -------------------- MESSAGE HANDLING -------------------- */
+
   function showMessage(text) {
     messageQueue.push(text);
 
@@ -954,6 +957,6 @@
     }
 
     uiMode = "message";
-    battleMessage = messageQueue.shift();
+    battleMessage = messageQueue.shift(); 
   }
 </script>
