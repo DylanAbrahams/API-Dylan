@@ -250,6 +250,9 @@ Een aantal dingen die ik niet heb gedaan, wat ik nog graag had willen doen als i
 
 
 ## Bronnenlijst
+PokeAPI
+Link: https://pokeapi.co/
+
 Video over Astro
 Link: https://www.youtube.com/watch?v=dsTXcSeAZq8
 
@@ -258,6 +261,10 @@ Link: https://developer.mozilla.org/en-US/docs/Web/API
 
 Lijst met content API's 
 Link: https://github.com/public-apis/public-apis?utm_source=chatgpt.com
+
+ChatGPT - Om gebruik te maken van PokeAPI moest ik weten waar alle alle info stond, ChatGPT wist waar wat was opgeslagen, bv. plaatjes, moves, types etc.
+Vooral voor de detailpagina waar veel info werd laten zien. Met 
+Prompt: "Ik gebruikt PokeAPI, hoe kan ik welke informatie weergeven op mijn site?"
 
 Promise.all - Zorgt ervoor dat alles is geladen voordat we verder gaan
 Link: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all
@@ -281,6 +288,9 @@ Tilemap (degene die ik gebruikt heb)
 Link PNG: https://www.rebornevo.com/uploads/monthly_2023_03/Route1.png.f760ee448af075e4c51d29b7d6307e08.png
 Link Post: https://www.rebornevo.com/forums/topic/16872-mapscreenshotsprite-showcase/
 
+ChatGPT - Ik heb ChatGPT gebruikt om de collisions in een ander script tezetten en hier op te halen.
+Prompt: Kan ik deze coordinaten in een apart script zetten voor meer overzicht?
+
 Unused Pokemon maps
 Link: https://tcrf.net/Pok%C3%A9mon_Gold_and_Silver/Unused_Maps
 
@@ -293,6 +303,9 @@ Link: https://www.youtube.com/watch?v=Bq5GVrXO6jE&t=579s
 Battle Achtergrond
 Link PNG: https://i.imgur.com/lhu26US.png
 Link Post: https://www.pokecommunity.com/threads/inserting-battle-backgrounds.302401/ 
+
+ChatGPT - Het automatisch schalen van de canvas, zodat de buttons op elk schermformaat werken. Uiteindelijk heb ik een wrapper eromheen gedaan en de canvas resized in het script
+Prompt: "Ik wil mijn canvas mee laten schalen zonder deze met CSS groter te maken zodat de buttons blijven werken"
 
 Pokeball Sprite
 Link: https://www.pngegg.com/en/png-incia
@@ -322,13 +335,8 @@ Pokemon Fire Red Sound Effects
 Link: https://sounds.spriters-resource.com/game_boy_advance/pokemonfireredleafgreen/asset/397732/
 
 
-ChatGPT
-Om gebruik te maken van PokeAPI moest ik weten waar alle alle info stond, ChatGPT wist waar wat was opgeslagen, bv. plaatjes, moves, types etc.
-Vooral voor de detailpagina waar veel info werd laten zien. Met 
-Prompt: "Ik gebruikt PokeAPI, hoe kan ik welke informatie weergeven op mijn site?"
 
-Het automatisch schalen van de canvas, zodat de buttons op elk schermformaat werken. Uiteindelijk heb ik een wrapper eromheen gedaan en de canvas resized in het script
-Prompt: "Ik wil mijn canvas mee laten schalen zonder deze met CSS groter te maken zodat de buttons blijven werken"
+
 
 
 
