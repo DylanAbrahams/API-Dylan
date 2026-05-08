@@ -25,7 +25,7 @@ h1 {
 
 
 /* =========================
-       POKÉMON MOVES
+    POKÉMON CARD COLORS
 ========================= */
 .type-normal { background: linear-gradient(oklch(96% 0 0), oklch(88% 0 0)); }
 .type-fire { background: linear-gradient(oklch(97% 0.04 70), oklch(89% 0.08 70)); }
